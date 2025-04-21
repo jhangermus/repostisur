@@ -3,8 +3,9 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Product } from "@/types"
+import { generateWhatsAppMessage, getWhatsAppUrl } from "@/lib/whatsapp"
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   quantity: number
 }
 
@@ -14,6 +15,7 @@ interface CartStore {
   removeItem: (id: string) => void
   updateItemQuantity: (id: string, quantity: number) => void
   clearCart: () => void
+  sendToWhatsApp: () => void
 }
 
 export const useCart = create<CartStore>()(
@@ -43,6 +45,16 @@ export const useCart = create<CartStore>()(
       },
       clearCart: () => {
         set({ items: [] })
+      },
+      sendToWhatsApp: () => {
+        const { items } = get()
+        if (items.length === 0) return
+
+        const message = generateWhatsAppMessage(items)
+        const phoneNumber = "584246687465" // Número de WhatsApp de Repostisur
+        const url = getWhatsAppUrl(phoneNumber, message)
+        
+        window.open(url, "_blank")
       },
     }),
     {

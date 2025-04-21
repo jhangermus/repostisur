@@ -113,86 +113,105 @@ export const getProducts = async ({
   category?: string
   sort?: string
 }): Promise<Product[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  let products = getStoredProducts()
-
-  // Filter by category if provided
-  if (category) {
-    products = products.filter((product) => product.category === category)
-  }
-
-  // Sort products if sort parameter is provided
-  if (sort) {
-    switch (sort) {
-      case "price-asc":
-        products = products.sort((a, b) => a.price - b.price)
-        break
-      case "price-desc":
-        products = products.sort((a, b) => b.price - a.price)
-        break
-      case "name-asc":
-        products = products.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      case "name-desc":
-        products = products.sort((a, b) => b.name.localeCompare(a.name))
-        break
-      default:
-        break
+  // Construir la URL con los parámetros de consulta
+  const params = new URLSearchParams()
+  if (category) params.append('category', category)
+  if (sort) params.append('sort', sort)
+  
+  try {
+    const response = await fetch(`/api/products?${params.toString()}`)
+    if (!response.ok) {
+      throw new Error('Error al obtener productos')
     }
+    return response.json()
+  } catch (error) {
+    console.error('Error al obtener productos:', error)
+    return []
   }
-
-  return products
 }
 
 // Get featured products
 export const getFeaturedProducts = async (): Promise<Product[]> => {
-  const products = await getProducts({})
-  return products.filter((product) => product.featured)
+  try {
+    const response = await fetch('/api/products?featured=true')
+    if (!response.ok) {
+      throw new Error('Error al obtener productos destacados')
+    }
+    return response.json()
+  } catch (error) {
+    console.error('Error al obtener productos destacados:', error)
+    return []
+  }
 }
 
 // Get a product by ID
 export const getProductById = async (id: string): Promise<Product | null> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
-  const products = getStoredProducts()
-  return products.find((product) => product.id === id) || null
+  try {
+    const response = await fetch(`/api/products?id=${id}`)
+    if (response.status === 404) {
+      return null
+    }
+    if (!response.ok) {
+      throw new Error('Error al obtener producto')
+    }
+    return response.json()
+  } catch (error) {
+    console.error(`Error al obtener producto con ID ${id}:`, error)
+    return null
+  }
 }
 
 // Get related products (same category, excluding the current product)
 export const getRelatedProducts = async (category: string, currentProductId: string): Promise<Product[]> => {
-  const products = await getProducts({})
-  return products.filter((product) => product.category === category && product.id !== currentProductId).slice(0, 4) // Limit to 4 related products
+  try {
+    const response = await fetch(`/api/products?category=${category}&related=${currentProductId}`)
+    if (!response.ok) {
+      throw new Error('Error al obtener productos relacionados')
+    }
+    return response.json()
+  } catch (error) {
+    console.error('Error al obtener productos relacionados:', error)
+    return []
+  }
 }
 
 // Save a product (create or update)
 export const saveProduct = async (product: Product): Promise<Product> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 800))
-
-  const products = getStoredProducts()
-  const existingProductIndex = products.findIndex((p) => p.id === product.id)
-
-  if (existingProductIndex !== -1) {
-    // Update existing product
-    products[existingProductIndex] = product
-  } else {
-    // Add new product
-    products.push(product)
+  try {
+    const method = product.id ? 'PUT' : 'POST'
+    const url = product.id ? `/api/products?id=${product.id}` : '/api/products'
+    
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(product),
+    })
+    
+    if (!response.ok) {
+      throw new Error('Error al guardar producto')
+    }
+    
+    return response.json()
+  } catch (error) {
+    console.error('Error al guardar producto:', error)
+    throw error
   }
-
-  setStoredProducts(products)
-  return product
 }
 
 // Delete a product
 export const deleteProduct = async (id: string): Promise<void> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const products = getStoredProducts()
-  const updatedProducts = products.filter((product) => product.id !== id)
-  setStoredProducts(updatedProducts)
+  try {
+    const response = await fetch(`/api/products?id=${id}`, {
+      method: 'DELETE',
+    })
+    
+    if (!response.ok) {
+      throw new Error('Error al eliminar producto')
+    }
+  } catch (error) {
+    console.error(`Error al eliminar producto con ID ${id}:`, error)
+    throw error
+  }
 }

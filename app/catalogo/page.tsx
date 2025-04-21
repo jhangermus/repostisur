@@ -1,19 +1,25 @@
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { ProductCard } from "@/components/product-card"
 import { ProductFilters } from "@/components/product-filters"
-import { getProducts } from "@/lib/products"
+import { ProductList } from "@/components/product-list"
+import { Suspense } from 'react'
 
-export default async function CatalogoPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  const products = await getProducts({
-    category: searchParams.category as string,
-    sort: searchParams.sort as string,
-  })
+// Componente de carga para Suspense
+function LoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[...Array(6)].map((_, index) => (
+        <div key={index} className="space-y-2">
+          <div className="h-[200px] w-full bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
+export default function CatalogoPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -25,17 +31,10 @@ export default async function CatalogoPage({
             </div>
             <div className="md:w-3/4">
               <h1 className="text-3xl font-bold mb-6">Catálogo de Productos</h1>
-              {products.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No se encontraron productos con los filtros seleccionados.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              )}
+              {/* Envolver ProductList con Suspense para una mejor UX de carga */}
+              <Suspense fallback={<LoadingSkeleton />}>
+                <ProductList />
+              </Suspense>
             </div>
           </div>
         </div>

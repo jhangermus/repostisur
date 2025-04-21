@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getProductById, saveProduct } from "@/lib/products"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -46,6 +47,7 @@ interface ProductFormProps {
 
 export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetchingInitialData, setIsFetchingInitialData] = useState(!!productId)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,19 +64,26 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
   useEffect(() => {
     const loadProduct = async () => {
       if (productId) {
-        setIsLoading(true)
-        const product = await getProductById(productId)
-        if (product) {
-          form.reset({
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            imageUrl: product.imageUrl || "",
-          })
+        setIsFetchingInitialData(true)
+        try {
+          const product = await getProductById(productId)
+          if (product) {
+            form.reset({
+              name: product.name,
+              description: product.description,
+              price: product.price,
+              stock: product.stock,
+              category: product.category,
+              imageUrl: product.imageUrl || "",
+            })
+          } else {
+            console.error(`Product with ID ${productId} not found.`)
+          }
+        } catch (error) {
+          console.error("Error fetching product data:", error)
+        } finally {
+          setIsFetchingInitialData(false)
         }
-        setIsLoading(false)
       }
     }
 
@@ -86,15 +95,33 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
     try {
       await saveProduct({
         id: productId || crypto.randomUUID(),
+        featured: false,
         ...values,
         imageUrl: values.imageUrl || undefined,
       })
       onSuccess()
     } catch (error) {
-      console.error("Error al guardar el producto:", error)
+      console.error("Error saving product:", error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isFetchingInitialData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Cargando datos del producto...</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -113,7 +140,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem>
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nombre del producto" {...field} />
+                      <Input placeholder="Nombre del producto" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -125,7 +152,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Categoría</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Seleccionar categoría" />
@@ -150,7 +177,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem>
                     <FormLabel>Precio</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} />
+                      <Input type="number" step="0.01" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,7 +190,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem>
                     <FormLabel>Stock</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -176,7 +203,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem className="col-span-2">
                     <FormLabel>URL de la imagen</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://ejemplo.com/imagen.jpg" {...field} />
+                      <Input placeholder="https://ejemplo.com/imagen.jpg" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormDescription>Deja en blanco para usar una imagen predeterminada</FormDescription>
                     <FormMessage />
@@ -190,7 +217,7 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem className="col-span-2">
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Descripción del producto" className="resize-none" {...field} />
+                      <Textarea placeholder="Descripción del producto" className="resize-none" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -198,10 +225,10 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
               />
             </div>
             <div className="flex justify-end space-x-4">
-              <Button variant="outline" onClick={onCancel} type="button">
+              <Button variant="outline" onClick={onCancel} type="button" disabled={isLoading}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading || isFetchingInitialData}>
                 {isLoading ? "Guardando..." : "Guardar"}
               </Button>
             </div>

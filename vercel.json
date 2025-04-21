@@ -9,5 +9,6 @@
   "env": {
     "NEXTAUTH_URL": "https://repostisur.vercel.app",
     "NEXTAUTH_SECRET": "repostisur-secret-key-2024-vercel-deploy"
-  }
+  },
+  "readme": "Las variables KV_URL, KV_REST_API_URL, KV_REST_API_TOKEN y KV_REST_API_READ_ONLY_TOKEN se configurarán automáticamente al conectar Vercel KV en la interfaz de Vercel"
 } 
