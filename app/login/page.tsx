@@ -109,13 +109,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-4 text-center text-sm text-muted-foreground">
-              <p>
-                Para demostración, usa:
-                <br />
-                Email: admin@repostisur.com
-                <br />
-                Contraseña: admin123
-              </p>
+            
             </div>
           </CardContent>
         </Card>

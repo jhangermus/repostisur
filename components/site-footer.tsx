@@ -69,9 +69,9 @@ export function SiteFooter() {
           <div>
             <h3 className="font-medium mb-4">Contacto</h3>
             <ul className="space-y-2 text-sm">
-              <li>Email: info@dulcereposteria.com</li>
-              <li>Teléfono: +58 123 456 7890</li>
-              <li>Dirección: Av. Principal, Ciudad</li>
+              <li>Email: repostisurca@gmail.com</li>
+              <li>Teléfono: +58 424 668 7465</li>
+              <li>Dirección: San Francisco, Zulia, Venezuela</li>
             </ul>
           </div>
         </div>
