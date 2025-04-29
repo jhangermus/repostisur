@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         // En un entorno real, aquí verificarías contra una base de datos
         // Por ahora, usamos credenciales hardcodeadas para demostración
         if (credentials?.email === "admin@repostisur.com" && credentials?.password === "admin123") {
-          // Si las credenciales son correctas, devuelve un objeto de usuario
+          // Si las credenciales son correctas, devuelve un objeto de usuariooo
           return {
             id: "1",
             name: "Administrador",
@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        // Si las credenciales son incorrectas, devuelve null
+        // Si las credenciales son incorrectas, devuelve nwwwwwwwwwwwwwwwwwwwwwwwull
         return null
       },
     }),
