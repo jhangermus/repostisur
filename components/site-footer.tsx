@@ -1,4 +1,9 @@
 import Link from "next/link"
+<<<<<<< HEAD
+=======
+import { Construction } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+>>>>>>> dev
 
 export function SiteFooter() {
   return (
@@ -44,6 +49,7 @@ export function SiteFooter() {
           <div>
             <h3 className="font-medium mb-4">Categorías</h3>
             <ul className="space-y-2 text-sm">
+<<<<<<< HEAD
               <li>
                 <Link href="/catalogo/moldes" className="hover:text-primary">
                   Moldes
@@ -64,6 +70,62 @@ export function SiteFooter() {
                   Ingredientes
                 </Link>
               </li>
+=======
+              <TooltipProvider>
+                <li>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href="/catalogo?category=moldes" className="hover:text-primary flex items-center">
+                        Moldes
+                        <Construction className="h-3 w-3 ml-1 text-muted-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sección en desarrollo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </li>
+                <li>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href="/catalogo?category=colorantes" className="hover:text-primary flex items-center">
+                        Colorantes
+                        <Construction className="h-3 w-3 ml-1 text-muted-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sección en desarrollo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </li>
+                <li>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href="/catalogo?category=utensilios" className="hover:text-primary flex items-center">
+                        Utensilios
+                        <Construction className="h-3 w-3 ml-1 text-muted-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sección en desarrollo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </li>
+                <li>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href="/catalogo?category=ingredientes" className="hover:text-primary flex items-center">
+                        Ingredientes
+                        <Construction className="h-3 w-3 ml-1 text-muted-foreground" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sección en desarrollo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </li>
+              </TooltipProvider>
+>>>>>>> dev
             </ul>
           </div>
           <div>

@@ -1,7 +1,11 @@
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ProductDetails } from "@/components/product-details"
+<<<<<<< HEAD
 import { Suspense } from 'react'
+=======
+import { Suspense } from "react"
+>>>>>>> dev
 import { Skeleton } from "@/components/ui/skeleton"
 
 // Componente de carga para Suspense

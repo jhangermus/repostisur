@@ -217,7 +217,16 @@ export function ProductForm({ productId, onCancel, onSuccess }: ProductFormProps
                   <FormItem className="col-span-2">
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>
+<<<<<<< HEAD
                       <Textarea placeholder="Descripción del producto" className="resize-none" {...field} disabled={isLoading} />
+=======
+                      <Textarea
+                        placeholder="Descripción del producto"
+                        className="resize-none"
+                        {...field}
+                        disabled={isLoading}
+                      />
+>>>>>>> dev
                     </FormControl>
                     <FormMessage />
                   </FormItem>

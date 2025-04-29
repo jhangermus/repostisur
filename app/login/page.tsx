@@ -108,9 +108,13 @@ export default function LoginPage() {
               </Button>
             </form>
 
+<<<<<<< HEAD
             <div className="mt-4 text-center text-sm text-muted-foreground">
             
             </div>
+=======
+            <div className="mt-4 text-center text-sm text-muted-foreground"></div>
+>>>>>>> dev
           </CardContent>
         </Card>
       </main>

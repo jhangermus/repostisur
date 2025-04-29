@@ -82,4 +82,8 @@ export const MOCK_PRODUCTS: Product[] = [
     imageUrl: "/placeholder.svg?height=300&width=300",
     featured: false,
   },
+<<<<<<< HEAD
 ] 
+=======
+]
+>>>>>>> dev

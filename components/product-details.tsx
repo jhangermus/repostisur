@@ -1,6 +1,10 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
+=======
+import { useState, useEffect } from "react"
+>>>>>>> dev
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { getProductById, getRelatedProducts } from "@/lib/products"
@@ -29,7 +33,10 @@ export function ProductDetails({ productId }: { productId: string }) {
 
         const fetchedRelated = await getRelatedProducts(fetchedProduct.category, fetchedProduct.id)
         setRelatedProducts(fetchedRelated)
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
       } catch (error) {
         console.error("Error loading product data:", error)
         // Considerar mostrar un mensaje de error al usuario
@@ -108,4 +115,8 @@ export function ProductDetails({ productId }: { productId: string }) {
       )}
     </div>
   )
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> dev

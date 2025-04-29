@@ -11,7 +11,11 @@ export const authOptions: NextAuthOptions = {
 
       // Configuración de los campos del formulario de inicio de sesión
       credentials: {
+<<<<<<< HEAD
         email: { label: "Email", type: "email", placeholder: "admin@repostisur.com" },
+=======
+        email: { label: "Email", type: "email", placeholder: "" },
+>>>>>>> dev
         password: { label: "Contraseña", type: "password" },
       },
 

@@ -10,4 +10,8 @@
     "NEXTAUTH_URL": "https://repostisur.vercel.app",
     "NEXTAUTH_SECRET": "repostisur-secret-key-2024-vercel-deploy"
   }
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> dev

@@ -1,5 +1,6 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
 import { getFeaturedProducts } from "@/lib/products"
 import type { Product } from "@/types"
@@ -8,6 +9,16 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import Image from 'next/image'
+=======
+import { useState, useEffect } from "react"
+import { getFeaturedProducts } from "@/lib/products"
+import type { Product } from "@/types"
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import Image from "next/image"
+>>>>>>> dev
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -56,9 +67,13 @@ export function FeaturedProducts() {
             <h3 className="font-medium text-lg truncate">
               <Link href={`/producto/${product.id}`}>{product.name}</Link>
             </h3>
+<<<<<<< HEAD
             <p className="text-sm text-muted-foreground mb-2 truncate">
               {product.description}
             </p>
+=======
+            <p className="text-sm text-muted-foreground mb-2 truncate">{product.description}</p>
+>>>>>>> dev
             <div className="flex justify-between items-center">
               <span className="font-semibold text-lg">${product.price.toFixed(2)}</span>
               <Button size="sm" asChild>
@@ -70,4 +85,8 @@ export function FeaturedProducts() {
       ))}
     </div>
   )
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> dev

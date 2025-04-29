@@ -53,7 +53,11 @@ export const useCart = create<CartStore>()(
         const message = generateWhatsAppMessage(items)
         const phoneNumber = "584246687465" // Número de WhatsApp de Repostisur
         const url = getWhatsAppUrl(phoneNumber, message)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> dev
         window.open(url, "_blank")
       },
     }),

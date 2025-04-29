@@ -4,7 +4,11 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ProductFilters } from "@/components/product-filters"
 import { ProductList } from "@/components/product-list"
+<<<<<<< HEAD
 import { Suspense } from 'react'
+=======
+import { Suspense } from "react"
+>>>>>>> dev
 
 // Componente de carga para Suspense
 function LoadingSkeleton() {
@@ -38,6 +42,11 @@ export default function CatalogoPage() {
       <SiteHeader />
       <main className="flex-1">
         <div className="container py-8">
+<<<<<<< HEAD
+=======
+          <h1 className="text-3xl font-bold mb-6">Catálogo de Productos</h1>
+
+>>>>>>> dev
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-1/4">
               <Suspense fallback={<FiltersLoadingSkeleton />}>
@@ -45,8 +54,11 @@ export default function CatalogoPage() {
               </Suspense>
             </div>
             <div className="md:w-3/4">
+<<<<<<< HEAD
               <h1 className="text-3xl font-bold mb-6">Catálogo de Productos</h1>
               {/* Envolver ProductList con Suspense para una mejor UX de carga */}
+=======
+>>>>>>> dev
               <Suspense fallback={<LoadingSkeleton />}>
                 <ProductList />
               </Suspense>

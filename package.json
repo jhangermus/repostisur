@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@auth/core": "latest",
     "@hookform/resolvers": "^3.9.1",
+=======
+    "@hookform/resolvers": "latest",
+>>>>>>> dev
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
     "@radix-ui/react-aspect-ratio": "1.1.1",
@@ -37,8 +41,12 @@
     "@radix-ui/react-toast": "1.2.4",
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
+<<<<<<< HEAD
     "@radix-ui/react-tooltip": "1.1.6",
     "@vercel/kv": "^3.0.0",
+=======
+    "@radix-ui/react-tooltip": "latest",
+>>>>>>> dev
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -48,23 +56,44 @@
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "15.2.4",
+<<<<<<< HEAD
     "next-themes": "^0.4.4",
     "react": "^19",
     "react-day-picker": "8.10.1",
     "react-dom": "^19",
     "react-hook-form": "^7.54.1",
+=======
+    "next-themes": "latest",
+    "react": "^19",
+    "react-day-picker": "8.10.1",
+    "react-dom": "^19",
+    "react-hook-form": "latest",
+>>>>>>> dev
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
+<<<<<<< HEAD
     "zod": "^3.24.1",
     "immer": "latest",
     "use-sync-external-store": "latest",
     "nodemailer": "latest",
     "zustand": "latest",
     "next-auth": "latest"
+=======
+    "zod": "latest",
+    "@auth/core": "latest",
+    "nodemailer": "latest",
+    "immer": "latest",
+    "use-sync-external-store": "latest",
+    "@emotion/is-prop-valid": "latest",
+    "next-auth": "latest",
+    "zustand": "latest",
+    "@vercel/kv": "latest",
+    "framer-motion": "latest"
+>>>>>>> dev
   },
   "devDependencies": {
     "@types/node": "^22",

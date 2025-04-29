@@ -115,6 +115,7 @@ export const getProducts = async ({
 }): Promise<Product[]> => {
   // Construir la URL con los parámetros de consulta
   const params = new URLSearchParams()
+<<<<<<< HEAD
   if (category) params.append('category', category)
   if (sort) params.append('sort', sort)
   
@@ -126,6 +127,19 @@ export const getProducts = async ({
     return response.json()
   } catch (error) {
     console.error('Error al obtener productos:', error)
+=======
+  if (category) params.append("category", category)
+  if (sort) params.append("sort", sort)
+
+  try {
+    const response = await fetch(`/api/products?${params.toString()}`)
+    if (!response.ok) {
+      throw new Error("Error al obtener productos")
+    }
+    return response.json()
+  } catch (error) {
+    console.error("Error al obtener productos:", error)
+>>>>>>> dev
     return []
   }
 }
@@ -133,6 +147,7 @@ export const getProducts = async ({
 // Get featured products
 export const getFeaturedProducts = async (): Promise<Product[]> => {
   try {
+<<<<<<< HEAD
     const response = await fetch('/api/products?featured=true')
     if (!response.ok) {
       throw new Error('Error al obtener productos destacados')
@@ -140,6 +155,15 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
     return response.json()
   } catch (error) {
     console.error('Error al obtener productos destacados:', error)
+=======
+    const response = await fetch("/api/products?featured=true")
+    if (!response.ok) {
+      throw new Error("Error al obtener productos destacados")
+    }
+    return response.json()
+  } catch (error) {
+    console.error("Error al obtener productos destacados:", error)
+>>>>>>> dev
     return []
   }
 }
@@ -152,7 +176,11 @@ export const getProductById = async (id: string): Promise<Product | null> => {
       return null
     }
     if (!response.ok) {
+<<<<<<< HEAD
       throw new Error('Error al obtener producto')
+=======
+      throw new Error("Error al obtener producto")
+>>>>>>> dev
     }
     return response.json()
   } catch (error) {
@@ -166,11 +194,19 @@ export const getRelatedProducts = async (category: string, currentProductId: str
   try {
     const response = await fetch(`/api/products?category=${category}&related=${currentProductId}`)
     if (!response.ok) {
+<<<<<<< HEAD
       throw new Error('Error al obtener productos relacionados')
     }
     return response.json()
   } catch (error) {
     console.error('Error al obtener productos relacionados:', error)
+=======
+      throw new Error("Error al obtener productos relacionados")
+    }
+    return response.json()
+  } catch (error) {
+    console.error("Error al obtener productos relacionados:", error)
+>>>>>>> dev
     return []
   }
 }
@@ -178,6 +214,7 @@ export const getRelatedProducts = async (category: string, currentProductId: str
 // Save a product (create or update)
 export const saveProduct = async (product: Product): Promise<Product> => {
   try {
+<<<<<<< HEAD
     const method = product.id ? 'PUT' : 'POST'
     const url = product.id ? `/api/products?id=${product.id}` : '/api/products'
     
@@ -196,6 +233,26 @@ export const saveProduct = async (product: Product): Promise<Product> => {
     return response.json()
   } catch (error) {
     console.error('Error al guardar producto:', error)
+=======
+    const method = product.id ? "PUT" : "POST"
+    const url = product.id ? `/api/products?id=${product.id}` : "/api/products"
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    })
+
+    if (!response.ok) {
+      throw new Error("Error al guardar producto")
+    }
+
+    return response.json()
+  } catch (error) {
+    console.error("Error al guardar producto:", error)
+>>>>>>> dev
     throw error
   }
 }
@@ -204,11 +261,19 @@ export const saveProduct = async (product: Product): Promise<Product> => {
 export const deleteProduct = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`/api/products?id=${id}`, {
+<<<<<<< HEAD
       method: 'DELETE',
     })
     
     if (!response.ok) {
       throw new Error('Error al eliminar producto')
+=======
+      method: "DELETE",
+    })
+
+    if (!response.ok) {
+      throw new Error("Error al eliminar producto")
+>>>>>>> dev
     }
   } catch (error) {
     console.error(`Error al eliminar producto con ID ${id}:`, error)

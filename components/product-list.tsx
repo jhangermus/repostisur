@@ -1,7 +1,12 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+=======
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+>>>>>>> dev
 import { getProducts } from "@/lib/products"
 import type { Product } from "@/types"
 import { ProductCard } from "@/components/product-card"
@@ -9,8 +14,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function ProductList() {
   const searchParams = useSearchParams()
+<<<<<<< HEAD
   const category = searchParams.get('category') ?? undefined
   const sort = searchParams.get('sort') ?? undefined
+=======
+  const category = searchParams.get("category") ?? undefined
+  const sort = searchParams.get("sort") ?? undefined
+>>>>>>> dev
 
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,4 +71,8 @@ export function ProductList() {
       ))}
     </div>
   )
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> dev

@@ -10,7 +10,11 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Repostisur C.A. - Insumos y Materiales",
   description: "Tienda online de insumos de repostería, materiales al mayor y materia prima",
+<<<<<<< HEAD
     generator: 'v0.dev'
+=======
+  generator: "v0.dev",
+>>>>>>> dev
 }
 
 export default function RootLayout({
