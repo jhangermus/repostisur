@@ -18,17 +18,11 @@ export default function CartPage() {
   const { items, removeItem, updateItemQuantity, clearCart } = useCart()
   const [total, setTotal] = useState(0)
   const [subtotal, setSubtotal] = useState(0)
-  const [shipping, setShipping] = useState(0)
 
   useEffect(() => {
     const newSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
     setSubtotal(newSubtotal)
-
-    // Cálculo de envío (ejemplo: gratis por encima de $50, de lo contrario $5)
-    const newShipping = newSubtotal > 50 ? 0 : 5
-    setShipping(newShipping)
-
-    setTotal(newSubtotal + newShipping)
+    setTotal(newSubtotal)
   }, [items])
 
   if (items.length === 0) {
@@ -172,7 +166,7 @@ export default function CartPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Envío</span>
-                      <span>{shipping === 0 ? "Gratis" : formatPrice(shipping)}</span>
+                      <span>A coordinar</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-medium text-lg">
