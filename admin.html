@@ -556,13 +556,18 @@
           </div>
         </div>
 
-        <!-- Image Upload (Direct from camera/gallery or URL) -->
+        <!-- Image Upload with Instant Preview Thumbnail -->
         <div class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Foto del Producto (Subir o URL)</label>
-          <div class="flex items-center gap-2">
-            <input id="prod-image-file" type="file" accept="image/*" class="text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-secondary-container file:text-on-secondary-container hover:file:bg-opacity-80 cursor-pointer"/>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Foto del Producto</label>
+          <div class="flex items-center gap-3">
+            <div id="modal-img-preview-box" class="w-16 h-16 rounded-xl bg-surface-container-low border border-outline-variant overflow-hidden flex items-center justify-center flex-shrink-0 bg-cover bg-center">
+              <span id="modal-img-placeholder-icon" class="material-symbols-outlined text-outline-variant text-2xl">image</span>
+            </div>
+            <div class="flex-grow space-y-1">
+              <input id="prod-image-file" type="file" accept="image/*" class="text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-secondary-container file:text-on-secondary-container hover:file:bg-opacity-80 cursor-pointer w-full"/>
+              <input id="prod-image" type="url" placeholder="O pega enlace de foto: https://..." class="w-full px-2.5 py-1.5 border border-outline-variant rounded-lg text-xs bg-surface focus:border-secondary focus:ring-1 focus:ring-secondary"/>
+            </div>
           </div>
-          <input id="prod-image" type="url" placeholder="O pega un enlace de imagen: https://..." class="w-full px-3 py-2 border border-outline-variant rounded-xl text-xs bg-surface focus:border-secondary focus:ring-1 focus:ring-secondary"/>
         </div>
 
         <div class="grid grid-cols-2 gap-3">

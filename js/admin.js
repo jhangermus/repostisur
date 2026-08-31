@@ -115,7 +115,6 @@ async function loadBCVSettings() {
   if (manualRateContainer) manualRateContainer.style.display = settings.bcvMode === 'manual' ? 'block' : 'none';
   if (storePhoneInput) storePhoneInput.value = settings.whatsappNumber || '584121234567';
 
-  // Supabase status
   const sbConfig = SupabaseManager.getConfig();
   if (supabaseUrlInput) supabaseUrlInput.value = sbConfig.url;
   if (supabaseKeyInput) supabaseKeyInput.value = sbConfig.anonKey;
@@ -139,12 +138,10 @@ function renderPriceChecker() {
 
   let products = RepostisurStorage.getProducts();
 
-  // Category filter
   if (checkerCurrentCategory !== 'all') {
     products = products.filter(p => p.category.toLowerCase() === checkerCurrentCategory.toLowerCase());
   }
 
-  // Search query filter
   if (checkerSearchQuery.trim()) {
     const q = checkerSearchQuery.toLowerCase().trim();
     products = products.filter(p =>
@@ -180,6 +177,8 @@ function renderPriceChecker() {
       stockTag = `<span class="bg-[#E6F4EA] text-[#137333] text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#137333]"></span> ${product.stock} disponibles</span>`;
     }
 
+    const hasImg = product.image && product.image.trim() !== '';
+
     return `
       <div class="bg-surface-container-lowest border-2 ${isOut ? 'border-outline-variant/60 opacity-75' : 'border-outline-variant hover:border-secondary'} rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between">
         <div>
@@ -191,8 +190,9 @@ function renderPriceChecker() {
           </div>
 
           <div class="flex gap-3 items-center mb-4">
-            <div class="w-14 h-14 rounded-xl bg-surface-variant flex-shrink-0 bg-cover bg-center border border-outline-variant overflow-hidden"
-                 style="background-image: url('${product.image || 'https://via.placeholder.com/150'}')">
+            <div class="w-16 h-16 rounded-xl bg-surface-variant flex-shrink-0 bg-cover bg-center border border-outline-variant overflow-hidden flex items-center justify-center"
+                 style="${hasImg ? `background-image: url('${product.image}')` : ''}">
+              ${!hasImg ? `<span class="material-symbols-outlined text-outline-variant text-2xl">bakery_dining</span>` : ''}
             </div>
             <div>
               <h3 class="font-headline-md text-base sm:text-lg font-bold text-on-surface leading-tight">${product.name}</h3>
@@ -305,11 +305,14 @@ function renderAdminProductsTable() {
       stockBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E6F4EA] text-[#137333] font-label-sm text-xs font-semibold"><span class="w-2 h-2 rounded-full bg-[#137333]"></span> ${product.stock} un</span>`;
     }
 
+    const hasImg = product.image && product.image.trim() !== '';
+
     return `
       <tr class="hover:bg-surface-container-low transition-colors group">
         <td class="p-4 flex items-center gap-3">
-          <div class="w-12 h-12 rounded-lg bg-surface-variant flex-shrink-0 bg-cover bg-center border border-outline-variant overflow-hidden" 
-               style="background-image: url('${product.image || 'https://via.placeholder.com/150'}')">
+          <div class="w-12 h-12 rounded-lg bg-surface-variant flex-shrink-0 bg-cover bg-center border border-outline-variant overflow-hidden flex items-center justify-center" 
+               style="${hasImg ? `background-image: url('${product.image}')` : ''}">
+            ${!hasImg ? `<span class="material-symbols-outlined text-outline-variant text-xl">bakery_dining</span>` : ''}
           </div>
           <div>
             <p class="font-semibold text-on-surface text-sm sm:text-base">${product.name}</p>
@@ -378,12 +381,26 @@ function setupProductModal() {
   const closeBtn = document.getElementById('close-product-modal-btn');
   const form = document.getElementById('product-form');
   const fileInput = document.getElementById('prod-image-file');
+  const urlInput = document.getElementById('prod-image');
+  const previewBox = document.getElementById('modal-img-preview-box');
+  const placeholderIcon = document.getElementById('modal-img-placeholder-icon');
+
+  const updatePreview = (src) => {
+    if (previewBox && src && src.trim() !== '') {
+      previewBox.style.backgroundImage = `url('${src}')`;
+      if (placeholderIcon) placeholderIcon.classList.add('hidden');
+    } else if (previewBox) {
+      previewBox.style.backgroundImage = 'none';
+      if (placeholderIcon) placeholderIcon.classList.remove('hidden');
+    }
+  };
 
   if (addBtn && modal) {
     addBtn.addEventListener('click', () => {
       document.getElementById('modal-product-id').value = '';
       document.getElementById('modal-title').textContent = 'Añadir Nuevo Producto';
       form.reset();
+      updatePreview('');
       modal.classList.remove('hidden');
     });
   }
@@ -392,15 +409,20 @@ function setupProductModal() {
     closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
   }
 
+  if (urlInput) {
+    urlInput.addEventListener('input', (e) => updatePreview(e.target.value));
+  }
+
   if (fileInput) {
     fileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (file) {
-        showAdminToast('Subiendo imagen a Supabase...');
+        showAdminToast('Subiendo imagen...');
         const uploadedUrl = await RepostisurStorage.uploadImage(file);
         if (uploadedUrl) {
           document.getElementById('prod-image').value = uploadedUrl;
-          showAdminToast('¡Imagen subida correctamente!');
+          updatePreview(uploadedUrl);
+          showAdminToast('¡Imagen lista!');
         }
       }
     });
@@ -431,6 +453,16 @@ function handleEditProduct(productId) {
   document.getElementById('prod-badge').value = product.badge || '';
   document.getElementById('prod-featured').checked = !!product.featured;
   document.getElementById('prod-description').value = product.description || '';
+
+  const previewBox = document.getElementById('modal-img-preview-box');
+  const placeholderIcon = document.getElementById('modal-img-placeholder-icon');
+  if (previewBox && product.image) {
+    previewBox.style.backgroundImage = `url('${product.image}')`;
+    if (placeholderIcon) placeholderIcon.classList.add('hidden');
+  } else if (previewBox) {
+    previewBox.style.backgroundImage = 'none';
+    if (placeholderIcon) placeholderIcon.classList.remove('hidden');
+  }
 
   modal.classList.remove('hidden');
 }
@@ -463,7 +495,7 @@ async function saveProductFromModal() {
     unit,
     stock,
     status: stock === 0 ? 'out_of_stock' : stock <= 15 ? 'low_stock' : 'active',
-    image: image || 'https://via.placeholder.com/400x400?text=' + encodeURIComponent(name),
+    image: image || '',
     badge,
     featured,
     description
@@ -475,7 +507,7 @@ async function saveProductFromModal() {
   renderPriceChecker();
   renderAdminDashboard();
   renderAdminProductsTable();
-  showAdminToast('¡Producto guardado exitosamente en la nube!');
+  showAdminToast('¡Producto guardado exitosamente!');
 }
 
 async function handleDeleteProduct(productId) {

@@ -1,4 +1,4 @@
-// Repostisur Unified Data Layer (Supabase Cloud + LocalStorage Fallback + Realtime Sync)
+// Repostisur Unified Data Layer (Supabase Cloud + Base64 Fallback + Realtime Sync)
 
 const STORAGE_KEYS = {
   PRODUCTS: 'repostisur_products',
@@ -107,13 +107,11 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const RepostisurStorage = {
-  // Sync products from Supabase
   async syncFromCloud() {
     const client = SupabaseManager.getClient();
     if (!client) return this.getProducts();
 
     try {
-      // 1. Sync Products
       const { data: cloudProducts, error: prodErr } = await client
         .from('products')
         .select('*')
@@ -137,7 +135,6 @@ const RepostisurStorage = {
         this.saveProducts(mappedProducts);
       }
 
-      // 2. Sync Settings
       const { data: cloudSettings, error: setErr } = await client
         .from('store_settings')
         .select('*')
@@ -158,11 +155,9 @@ const RepostisurStorage = {
         this.saveSettings(mappedSettings);
       }
 
-      // 3. Setup Realtime Listener if not already active
       this.initRealtimeSubscriptions(client);
-
     } catch (err) {
-      console.warn('⚠️ No se pudo sincronizar con Supabase, usando caché local:', err);
+      console.warn('⚠️ Usando caché local:', err);
     }
     return this.getProducts();
   },
@@ -173,17 +168,11 @@ const RepostisurStorage = {
     this.realtimeActive = true;
 
     client.channel('repostisur-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
-        console.log('⚡ Cambio en tiempo real en productos:', payload);
-        this.syncFromCloud().then(() => {
-          window.dispatchEvent(new CustomEvent('repostisur_data_updated'));
-        });
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        this.syncFromCloud().then(() => window.dispatchEvent(new CustomEvent('repostisur_data_updated')));
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'store_settings' }, (payload) => {
-        console.log('⚡ Cambio en tiempo real en configuración:', payload);
-        this.syncFromCloud().then(() => {
-          window.dispatchEvent(new CustomEvent('repostisur_data_updated'));
-        });
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'store_settings' }, () => {
+        this.syncFromCloud().then(() => window.dispatchEvent(new CustomEvent('repostisur_data_updated')));
       })
       .subscribe();
   },
@@ -222,7 +211,6 @@ const RepostisurStorage = {
     }
     this.saveProducts(products);
 
-    // Save to Supabase Cloud if available
     const client = SupabaseManager.getClient();
     if (client) {
       try {
@@ -242,13 +230,9 @@ const RepostisurStorage = {
           updated_at: new Date().toISOString()
         };
 
-        const { error } = await client
-          .from('products')
-          .upsert(cloudRecord, { onConflict: 'id' });
-
-        if (error) console.warn('Error guardando en Supabase:', error);
+        await client.from('products').upsert(cloudRecord, { onConflict: 'id' });
       } catch (err) {
-        console.warn('Error en conexión con Supabase:', err);
+        console.warn('Error guardando en Supabase:', err);
       }
     }
 
@@ -305,32 +289,64 @@ const RepostisurStorage = {
     }
   },
 
-  // Upload image to Supabase Storage Bucket
+  // Robust Image Upload: Supabase Storage + Instant Compressed DataURL Fallback
   async uploadImage(file) {
+    // 1. First, create a high-quality compressed Base64 representation as immediate guarantee
+    const base64Promise = new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 800; // max 800px width/height for fast loading
+          let width = img.width;
+          let height = img.height;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(compressedDataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    const localBase64 = await base64Promise;
+
+    // 2. Attempt Supabase Storage Upload
     const client = SupabaseManager.getClient();
-    if (!client) return null;
+    if (client) {
+      try {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const fileName = `prod_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+        const { error } = await client.storage
+          .from('repostisur-images')
+          .upload(fileName, file, { cacheControl: '3600', upsert: true });
 
-    try {
-      const ext = file.name.split('.').pop();
-      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-      const { data, error } = await client.storage
-        .from('repostisur-images')
-        .upload(fileName, file, { cacheControl: '3600', upsert: true });
-
-      if (error) {
-        console.warn('Error al subir imagen a Supabase:', error);
-        return null;
+        if (!error) {
+          const { data: urlData } = client.storage
+            .from('repostisur-images')
+            .getPublicUrl(fileName);
+          if (urlData?.publicUrl) {
+            return urlData.publicUrl;
+          }
+        }
+      } catch (err) {
+        console.warn('Storage bucket no accesible aún, usando imagen optimizada:', err);
       }
-
-      const { data: urlData } = client.storage
-        .from('repostisur-images')
-        .getPublicUrl(fileName);
-
-      return urlData?.publicUrl || null;
-    } catch (err) {
-      console.warn('Excepción al subir imagen:', err);
-      return null;
     }
+
+    // Return the compressed Base64 image so the product NEVER has a missing image
+    return localBase64;
   },
 
   getCart() {
