@@ -132,6 +132,25 @@
     </div>
   </div>
 
+  <!-- PWA Install Banner on Mobile -->
+  <div id="pwa-install-banner" class="hidden md:hidden fixed top-2 left-2 right-2 bg-secondary text-on-secondary p-3 rounded-2xl shadow-2xl z-50 flex items-center justify-between animate-bounce">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary-container text-2xl">install_mobile</span>
+      <div class="text-left">
+        <p class="text-xs font-bold leading-tight">Instalar App Repostisur</p>
+        <p class="text-[10px] opacity-80">Accede más rápido desde tu pantalla</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="installPWA()" class="bg-primary-container text-on-primary-container font-bold text-xs px-3 py-1.5 rounded-xl shadow-sm">
+        Instalar
+      </button>
+      <button onclick="document.getElementById('pwa-install-banner').classList.add('hidden')" class="p-1 opacity-70">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Desktop SideNavBar -->
   <aside class="bg-surface-container text-secondary font-body-md fixed left-0 top-0 h-full w-64 hidden md:flex flex-col gap-2 p-6 border-r border-outline-variant z-30">
     <div class="mb-6">
