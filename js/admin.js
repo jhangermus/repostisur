@@ -22,9 +22,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupAdminSearch();
   setupPriceCheckerListeners();
 
-  // Listen to Realtime updates from Supabase Cloud
+  // Listen to Realtime updates from Supabase Cloud (productos)
   window.addEventListener('repostisur_data_updated', async () => {
-    console.log('🔄 Datos sincronizados en tiempo real.');
+    console.log('🔄 Productos sincronizados en tiempo real.');
+    await loadBCVSettings();
+    renderPriceChecker();
+    renderAdminDashboard();
+    renderAdminProductsTable();
+  });
+
+  // Listen to settings updates (tasa BCV, modo, PIN, WhatsApp) — sincroniza entre PWA y navegador
+  window.addEventListener('repostisur_settings_updated', async () => {
+    console.log('🔄 Ajustes (tasa BCV, modo) sincronizados desde la nube.');
     await loadBCVSettings();
     renderPriceChecker();
     renderAdminDashboard();

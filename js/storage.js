@@ -186,18 +186,60 @@ const RepostisurStorage = {
   },
 
   realtimeActive: false,
+  pollingInterval: null,
+
   initRealtimeSubscriptions(client) {
     if (this.realtimeActive || !client) return;
     this.realtimeActive = true;
 
+    // Realtime: escucha cambios en products Y store_settings
     client.channel('repostisur-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
         this.syncFromCloud().then(() => window.dispatchEvent(new CustomEvent('repostisur_data_updated')));
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'store_settings' }, () => {
-        this.syncFromCloud().then(() => window.dispatchEvent(new CustomEvent('repostisur_data_updated')));
+        console.log('🔄 Cambio en store_settings detectado vía Realtime');
+        this.syncSettingsOnly(client).then(() => window.dispatchEvent(new CustomEvent('repostisur_settings_updated')));
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Realtime status:', status);
+      });
+
+    // Polling de respaldo cada 30 segundos (garantiza sincronización de tasa BCV, modo, PIN, etc.)
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
+    this.pollingInterval = setInterval(() => {
+      this.syncSettingsOnly(client).then(() => {
+        window.dispatchEvent(new CustomEvent('repostisur_settings_updated'));
+      });
+    }, 30000);
+  },
+
+  async syncSettingsOnly(client) {
+    if (!client) return;
+    try {
+      const { data, error } = await client
+        .from('store_settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+      if (!error && data) {
+        const mappedSettings = {
+          storeName: data.store_name || 'Repostisur',
+          whatsappNumber: data.whatsapp_number || '584121234567',
+          address: data.address || '',
+          adminPin: data.admin_pin || '1234',
+          bcvMode: data.bcv_mode || 'auto',
+          manualRate: Number(data.manual_rate) || 85.00,
+          currentRate: Number(data.current_rate) || 85.00,
+          lastRateUpdate: data.last_rate_update
+        };
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(mappedSettings));
+        return mappedSettings;
+      }
+    } catch (err) {
+      console.warn('Error al sincronizar settings:', err);
+    }
   },
 
   getProducts() {
