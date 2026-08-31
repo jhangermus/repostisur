@@ -1,14 +1,15 @@
-const CACHE_NAME = 'repostisur-v1';
+const CACHE_NAME = 'repostisur-v2';
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
   './admin.html',
+  './index.html',
   './manifest.json',
   './js/storage.js',
   './js/bcv.js',
   './js/app.js',
   './js/admin.js',
-  './js/pwa.js'
+  './js/pwa.js',
+  './js/supabase-config.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -36,7 +37,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Try network first, then cache
   event.respondWith(
     fetch(event.request)
       .catch(() => {

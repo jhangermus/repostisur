@@ -1,11 +1,12 @@
 {
-  "name": "Repostisur - Insumos de Repostería",
+  "name": "Repostisur Admin & POS",
   "short_name": "Repostisur",
-  "description": "Tienda y Catálogo de Insumos de Repostería al mayor y detal",
-  "start_url": "./index.html",
+  "description": "Panel Administrativo y Consultor de Precios Repostisur",
+  "start_url": "./admin.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#fcf9f8",
-  "theme_color": "#ffd700",
+  "background_color": "#f8fafc",
+  "theme_color": "#2559bd",
   "orientation": "portrait",
   "icons": [
     {
