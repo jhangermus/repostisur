@@ -98,8 +98,41 @@ function initAuthGuard() {
 }
 
 async function loadBCVSettings() {
+  // 1. Primero sincronizar settings desde Supabase (fuente de verdad)
+  const client = SupabaseManager.getClient();
+  if (client) {
+    await RepostisurStorage.syncSettingsOnly(client);
+  }
+
+  // 2. Leer settings ya sincronizados desde localStorage (ahora actualizados desde Supabase)
   const settings = RepostisurStorage.getSettings();
-  const rateInfo = await BCVService.fetchOfficialRate();
+
+  // 3. Solo buscar en API externa si el modo es auto
+  let rateInfo;
+  if (settings.bcvMode === 'manual') {
+    rateInfo = {
+      rate: Number(settings.manualRate) || 85.00,
+      source: 'Manual'
+    };
+  } else {
+    // Auto: usar tasa ya guardada en Supabase, y en paralelo actualizar desde API
+    rateInfo = {
+      rate: Number(settings.currentRate) || 85.00,
+      source: 'BCV Auto'
+    };
+    // Actualizar tasa desde API en segundo plano (sin bloquear la UI)
+    BCVService.fetchOfficialRate().then(() => {
+      const updatedSettings = RepostisurStorage.getSettings();
+      const rate = Number(updatedSettings.currentRate);
+      const fmt = `Bs. ${rate.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      ['admin-bcv-display', 'checker-bcv-rate', 'admin-bcv-badge-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = fmt;
+      });
+      const statEl = document.getElementById('stat-bcv-rate');
+      if (statEl) statEl.textContent = fmt;
+    });
+  }
 
   const bcvRateDisplay = document.getElementById('admin-bcv-display');
   const checkerBcvRate = document.getElementById('checker-bcv-rate');
