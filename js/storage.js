@@ -112,29 +112,52 @@ const RepostisurStorage = {
     if (!client) return this.getProducts();
 
     try {
+      // 1. Sync Products from Supabase Cloud
       const { data: cloudProducts, error: prodErr } = await client
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!prodErr && cloudProducts && cloudProducts.length > 0) {
-        const mappedProducts = cloudProducts.map(p => ({
-          id: p.id,
-          name: p.name,
-          category: p.category,
-          categoryName: p.category_name || p.category,
-          priceUSD: Number(p.price_usd),
-          unit: p.unit,
-          stock: p.stock,
-          status: p.status,
-          image: p.image_url,
-          badge: p.badge || '',
-          featured: !!p.featured,
-          description: p.description || ''
-        }));
-        this.saveProducts(mappedProducts);
+      if (!prodErr && cloudProducts) {
+        if (cloudProducts.length > 0) {
+          const mappedProducts = cloudProducts.map(p => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            categoryName: p.category_name || p.category,
+            priceUSD: Number(p.price_usd),
+            unit: p.unit,
+            stock: p.stock,
+            status: p.status,
+            image: p.image_url || '',
+            badge: p.badge || '',
+            featured: !!p.featured,
+            description: p.description || ''
+          }));
+          this.saveProducts(mappedProducts);
+          return mappedProducts;
+        } else {
+          // If cloud has 0 products yet, seed default products to cloud
+          for (const item of DEFAULT_PRODUCTS) {
+            await client.from('products').upsert({
+              id: item.id,
+              name: item.name,
+              category: item.category,
+              category_name: item.categoryName || item.category,
+              price_usd: item.priceUSD,
+              unit: item.unit,
+              stock: item.stock,
+              status: item.status,
+              image_url: item.image,
+              badge: item.badge,
+              featured: item.featured,
+              description: item.description
+            }, { onConflict: 'id' });
+          }
+        }
       }
 
+      // 2. Sync Settings from Supabase Cloud
       const { data: cloudSettings, error: setErr } = await client
         .from('store_settings')
         .select('*')
@@ -157,7 +180,7 @@ const RepostisurStorage = {
 
       this.initRealtimeSubscriptions(client);
     } catch (err) {
-      console.warn('⚠️ Usando caché local:', err);
+      console.warn('⚠️ Error al sincronizar con Supabase Cloud:', err);
     }
     return this.getProducts();
   },
@@ -211,6 +234,7 @@ const RepostisurStorage = {
     }
     this.saveProducts(products);
 
+    // Save directly to Supabase Cloud
     const client = SupabaseManager.getClient();
     if (client) {
       try {
@@ -223,16 +247,23 @@ const RepostisurStorage = {
           unit: product.unit,
           stock: product.stock,
           status: product.status,
-          image_url: product.image,
-          badge: product.badge,
-          featured: product.featured,
-          description: product.description,
-          updated_at: new Date().toISOString()
+          image_url: product.image || null,
+          badge: product.badge || null,
+          featured: !!product.featured,
+          description: product.description || null
         };
 
-        await client.from('products').upsert(cloudRecord, { onConflict: 'id' });
+        const { error } = await client
+          .from('products')
+          .upsert(cloudRecord, { onConflict: 'id' });
+
+        if (error) {
+          console.error('❌ Error al guardar en Supabase:', error);
+        } else {
+          console.log('✅ Producto guardado y sincronizado en Supabase Cloud:', product.id);
+        }
       } catch (err) {
-        console.warn('Error guardando en Supabase:', err);
+        console.warn('Error en conexión con Supabase:', err);
       }
     }
 
@@ -247,6 +278,7 @@ const RepostisurStorage = {
     if (client) {
       try {
         await client.from('products').delete().eq('id', id);
+        console.log('✅ Producto eliminado de Supabase Cloud:', id);
       } catch (err) {
         console.warn('Error eliminando en Supabase:', err);
       }
@@ -289,16 +321,15 @@ const RepostisurStorage = {
     }
   },
 
-  // Robust Image Upload: Supabase Storage + Instant Compressed DataURL Fallback
+  // Image Upload with Automatic Resize & Fallback
   async uploadImage(file) {
-    // 1. First, create a high-quality compressed Base64 representation as immediate guarantee
     const base64Promise = new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxDim = 800; // max 800px width/height for fast loading
+          const maxDim = 800;
           let width = img.width;
           let height = img.height;
           if (width > height && width > maxDim) {
@@ -322,7 +353,6 @@ const RepostisurStorage = {
 
     const localBase64 = await base64Promise;
 
-    // 2. Attempt Supabase Storage Upload
     const client = SupabaseManager.getClient();
     if (client) {
       try {
@@ -341,11 +371,10 @@ const RepostisurStorage = {
           }
         }
       } catch (err) {
-        console.warn('Storage bucket no accesible aún, usando imagen optimizada:', err);
+        console.warn('Storage bucket no disponible, usando imagen embebida:', err);
       }
     }
 
-    // Return the compressed Base64 image so the product NEVER has a missing image
     return localBase64;
   },
 
