@@ -371,12 +371,17 @@
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Método de Pago Previsto *</label>
           <select id="order-payment-method" class="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm bg-surface focus:border-secondary focus:ring-1 focus:ring-secondary">
-            <option value="Pago Móvil (Bs)">Pago Móvil (Bolívares a tasa BCV)</option>
-            <option value="Transferencia Bancaria (Bs)">Transferencia Bancaria Nacional</option>
-            <option value="Efectivo en Divisas ($)">Efectivo Dólares ($ USD)</option>
-            <option value="Efectivo en Bolívares (Bs)">Efectivo Bolívares (Bs)</option>
-            <option value="Zelle">Zelle</option>
+            <option value="Pago Móvil">📱 Pago Móvil (Banco Provincial)</option>
+            <option value="Zelle">🇺🇸 Zelle (Bank of America)</option>
+            <option value="Binance">🪙 Binance Pay / USDT</option>
+            <option value="Efectivo en Divisas ($)">💵 Efectivo en Dólares ($ USD)</option>
+            <option value="Efectivo en Bolívares (Bs)">💵 Efectivo en Bolívares (Bs)</option>
           </select>
+        </div>
+
+        <!-- Dynamic Payment Info Box in Checkout -->
+        <div id="checkout-payment-details-box" class="bg-surface-container-low border border-outline-variant p-3 rounded-xl text-xs text-on-surface space-y-1">
+          <!-- Populated dynamically by app.js -->
         </div>
 
         <div>

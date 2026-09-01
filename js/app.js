@@ -334,6 +334,65 @@ function setupCheckoutModal() {
   const checkoutModal = document.getElementById('checkout-modal');
   const closeCheckoutBtn = document.getElementById('close-checkout-btn');
   const checkoutForm = document.getElementById('checkout-form');
+  const paymentSelect = document.getElementById('order-payment-method');
+  const paymentDetailsBox = document.getElementById('checkout-payment-details-box');
+
+  const updatePaymentPreview = () => {
+    if (!paymentDetailsBox || !paymentSelect) return;
+    const val = paymentSelect.value;
+    const valLower = val.toLowerCase();
+
+    if (valLower.includes('móvil') || valLower.includes('movil')) {
+      paymentDetailsBox.innerHTML = `
+        <div class="font-bold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-sm">account_balance</span> Datos para Pago Móvil (Bs.):</div>
+        <p class="font-mono text-[11px] leading-tight mt-1">
+          • <strong>Banco:</strong> Banco Provincial (0108)<br>
+          • <strong>Teléfono:</strong> 0412-6636971<br>
+          • <strong>C.I.:</strong> 11.865.973<br>
+          • <strong>Titular:</strong> Janeth Santiago
+        </p>
+      `;
+      paymentDetailsBox.classList.remove('hidden');
+    } else if (valLower.includes('zelle')) {
+      paymentDetailsBox.innerHTML = `
+        <div class="font-bold text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-sm">attach_money</span> Datos Zelle (USD):</div>
+        <p class="font-mono text-[11px] leading-tight mt-1">
+          • <strong>Correo:</strong> sarmientoharris98@gmail.com<br>
+          • <strong>Titular:</strong> Harris Sarmiento<br>
+          • <strong>Teléfono:</strong> (919) 282-6598<br>
+          • <strong>Banco:</strong> Bank of America (BofA)
+        </p>
+      `;
+      paymentDetailsBox.classList.remove('hidden');
+    } else if (valLower.includes('binance')) {
+      paymentDetailsBox.innerHTML = `
+        <div class="font-bold text-[#F3BA2F] flex items-center gap-1"><span class="material-symbols-outlined text-sm">currency_bitcoin</span> Datos Binance Pay / USDT:</div>
+        <p class="font-mono text-[11px] leading-tight mt-1">
+          • <strong>Email / Pay ID:</strong> jhangermanuel@gmail.com<br>
+          • <strong>Usuario:</strong> Jhangermus
+        </p>
+      `;
+      paymentDetailsBox.classList.remove('hidden');
+    } else if (valLower.includes('divisas')) {
+      paymentDetailsBox.innerHTML = `
+        <div class="font-bold text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-sm">payments</span> Pago en Efectivo ($ USD):</div>
+        <p class="text-[11px] text-on-surface-variant mt-0.5">Cancelas en dólares en efectivo al recibir o retirar tu pedido (billetes en buen estado).</p>
+      `;
+      paymentDetailsBox.classList.remove('hidden');
+    } else if (valLower.includes('bolívares') || valLower.includes('bolivares')) {
+      paymentDetailsBox.innerHTML = `
+        <div class="font-bold text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-sm">payments</span> Pago en Efectivo (Bs.):</div>
+        <p class="text-[11px] text-on-surface-variant mt-0.5">Cancelas el monto exacto en Bolívares en efectivo al momento de la entrega.</p>
+      `;
+      paymentDetailsBox.classList.remove('hidden');
+    } else {
+      paymentDetailsBox.classList.add('hidden');
+    }
+  };
+
+  if (paymentSelect) {
+    paymentSelect.addEventListener('change', updatePaymentPreview);
+  }
 
   if (openCheckoutBtn && checkoutModal) {
     openCheckoutBtn.addEventListener('click', () => {
@@ -342,6 +401,7 @@ function setupCheckoutModal() {
         showToastNotification('Tu carrito está vacío');
         return;
       }
+      updatePaymentPreview();
       checkoutModal.classList.remove('hidden');
     });
   }
@@ -391,6 +451,37 @@ function sendOrderToWhatsApp() {
   const totalUSDFormatted = BCVService.formatUSD(totalUSD);
   const rateFormatted = Number(currentRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  // Detalle de cuentas para el mensaje de WhatsApp
+  let paymentDetailsText = '';
+  const pmLower = paymentMethod.toLowerCase();
+
+  if (pmLower.includes('móvil') || pmLower.includes('movil')) {
+    paymentDetailsText = `📱 *DATOS PAGO MÓVIL (Bs.):*\n` +
+      `• Banco: Banco Provincial\n` +
+      `• C.I.: 11.865.973\n` +
+      `• Teléfono: 0412-6636971\n` +
+      `• Titular: Janeth Santiago\n` +
+      `• Monto a transferir: *${totalBsFormatted}*\n`;
+  } else if (pmLower.includes('zelle')) {
+    paymentDetailsText = `🇺🇸 *DATOS ZELLE ($ USD):*\n` +
+      `• Correo: sarmientoharris98@gmail.com\n` +
+      `• Titular: Harris Sarmiento\n` +
+      `• Teléfono: (919) 282-6598\n` +
+      `• Banco: Bank of America (BofA)\n` +
+      `• Monto a transferir: *${totalUSDFormatted}*\n`;
+  } else if (pmLower.includes('binance')) {
+    paymentDetailsText = `🪙 *DATOS BINANCE PAY / USDT:*\n` +
+      `• Email / Pay ID: jhangermanuel@gmail.com\n` +
+      `• Usuario: Jhangermus\n` +
+      `• Monto a transferir: *${totalUSDFormatted} USDT*\n`;
+  } else if (pmLower.includes('divisas')) {
+    paymentDetailsText = `💵 *PAGO EN EFECTIVO ($ USD):*\n` +
+      `• Monto a entregar: *${totalUSDFormatted}*\n`;
+  } else if (pmLower.includes('bolívares') || pmLower.includes('bolivares')) {
+    paymentDetailsText = `💵 *PAGO EN EFECTIVO (Bs.):*\n` +
+      `• Monto a entregar: *${totalBsFormatted}*\n`;
+  }
+
   let message = `🧁 *NUEVO PEDIDO - ${settings.storeName.toUpperCase()}* 🧁\n`;
   message += `━━━━━━━━━━━━━━━━━━━━\n`;
   message += `👤 *Cliente:* ${customerName}\n`;
@@ -408,8 +499,12 @@ function sendOrderToWhatsApp() {
   message += `━━━━━━━━━━━━━━━━━━━━\n`;
   message += `💰 *TOTAL A PAGAR:* ${totalBsFormatted} (${totalUSDFormatted})\n`;
   message += `ℹ️ *Tasa Oficial BCV aplicada:* ${rateFormatted} Bs/$\n`;
+  if (paymentDetailsText) {
+    message += `━━━━━━━━━━━━━━━━━━━━\n`;
+    message += paymentDetailsText;
+  }
   message += `━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `¿Podrían confirmarme la disponibilidad para procesar mi pago? ¡Muchas gracias!`;
+  message += `Adjunto mi comprobante de pago o confirmación para despachar el pedido. ¡Muchas gracias!`;
 
   const phone = settings.whatsappNumber.replace(/[^0-9]/g, '') || '584121234567';
   const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
