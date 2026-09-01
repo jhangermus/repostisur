@@ -8,7 +8,7 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_SETTINGS = {
-  storeName: 'Repostisur',
+  storeName: 'REPOSTISUR C.A',
   whatsappNumber: '584121234567',
   address: 'Av. Principal, Edificio Repostisur, Local 1',
   adminPin: '1234',
@@ -21,10 +21,10 @@ const DEFAULT_SETTINGS = {
 
 const DEFAULT_PRODUCTS = [
   {
-    id: 'CC-001',
+    id: 'INS-001',
     name: 'Cacao en Polvo Alcalino 100%',
-    category: 'cacao',
-    categoryName: 'Cacao',
+    category: 'insumos',
+    categoryName: 'Insumos',
     priceUSD: 5.00,
     unit: '1 kg',
     stock: 250,
@@ -35,7 +35,7 @@ const DEFAULT_PRODUCTS = [
     description: 'Cacao en polvo de grado profesional, alcalinizado para un sabor intenso y color profundo en tortas y coberturas.'
   },
   {
-    id: 'DS-042',
+    id: 'DES-042',
     name: 'Vasos Desechables Domo 7oz (Paq. 50)',
     category: 'desechables',
     categoryName: 'Desechables',
@@ -49,10 +49,10 @@ const DEFAULT_PRODUCTS = [
     description: 'Vasos plásticos transparentes ultrarresistentes con tapa domo sin orificio, perfectos para postres fríos y gelatinas.'
   },
   {
-    id: 'PD-015',
+    id: 'INS-015',
     name: 'Mezcla para Pudín de Vainilla',
-    category: 'pudines',
-    categoryName: 'Pudines',
+    category: 'insumos',
+    categoryName: 'Insumos',
     priceUSD: 3.00,
     unit: '500g',
     stock: 15,
@@ -63,46 +63,46 @@ const DEFAULT_PRODUCTS = [
     description: 'Premezcla instantánea para pudín y crema pastelera sabor vainilla, consistencia suave y cremosa.'
   },
   {
-    id: 'CC-088',
-    name: 'Gotas de Chocolate Oscuro para Hornear',
-    category: 'cacao',
-    categoryName: 'Cacao',
-    priceUSD: 4.50,
-    unit: '500g',
-    stock: 120,
+    id: 'UTN-008',
+    name: 'Espátula de Silicona Repostería',
+    category: 'utensilios',
+    categoryName: 'Utensilios',
+    priceUSD: 3.50,
+    unit: '1 unidad',
+    stock: 45,
     status: 'active',
     featured: false,
     badge: '',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZnMqxYSghrsVFF50dE7FUiEJd3v1NmZeoB8gy9ACvrK13ymKIHY1q1qq23etYNxS8HxgTkweNxuYEINh0t0Lec7BD88z1jumaEuy0ZoJEZ_c4bSP8ET7uLu9YTdMjdHZ54_HSh6cpm0YtJOpIoEDuRWnc0zID_NH_aLfDByeYJa1qeKONhEZ7LFaQwuKPAfS6lcnr3tO9iqhNVKdTBnKVwvprhaicT6QHY8TtvqN3cMkTxe8toIQP',
-    description: 'Chispas de chocolate semidulce resistentes a altas temperaturas, ideales para galletas, muffins y panes.'
+    description: 'Espátula miserable resistente al calor hasta 230°C, mango ergonómico.'
   },
   {
-    id: 'CC-095',
-    name: 'Manteca de Cacao Pura Desodorizada',
-    category: 'cacao',
-    categoryName: 'Cacao',
-    priceUSD: 8.50,
-    unit: '1 kg',
+    id: 'IMP-001',
+    name: 'Hoja de Arroz Comestible Impresa',
+    category: 'impresiones',
+    categoryName: 'Impresiones Comestibles',
+    priceUSD: 4.00,
+    unit: '1 hoja A4',
     stock: 80,
     status: 'active',
     featured: false,
-    badge: 'Premium',
+    badge: 'Personalizado',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUt_eCKmDcDNgMdSoEkFrcqJC2aC0wv8eWSUrJhYxGEifleHrvlLMpeFqMIGLc1eAck9-SxnE6BUqc3QsTGrIdGd4FJ68vei-ZAVka31HXB20mLypwBmTyx3b1-z5G3xSuKhcNI942Sgapbx9hlsnGX0BDSZyOTN6XEV_lEdCa-OPtk2LN1QuY4vSd8lD42lPFhJG0Nyvt9sJXUDJCBgdGvTkwrnXSEMRTc2cKyehfErhempeFQ0vd',
-    description: 'Grasa natural de cacao pura 100%, esencial para temperado de chocolate, bombones y brillo de coberturas.'
+    description: 'Impresión en papel de arroz con tintas 100% vegetales comestibles de alta resolución para tortas.'
   },
   {
-    id: 'DS-102',
-    name: 'Bandejas de Aluminio con Tapa 500ml',
-    category: 'desechables',
-    categoryName: 'Desechables',
-    priceUSD: 3.20,
-    unit: 'Paq. 25u',
-    stock: 0,
-    status: 'out_of_stock',
-    featured: false,
-    badge: 'Agotado',
+    id: 'CKT-001',
+    name: 'Cake Topper Personalizado 3D',
+    category: 'cake-topper',
+    categoryName: 'Cake Topper',
+    priceUSD: 5.50,
+    unit: '1 unidad',
+    stock: 30,
+    status: 'active',
+    featured: true,
+    badge: 'Top',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZxaDPXL0qc5Qfuksna9m7jpEbOjKKJ3k9UgKOHIeT9QtvHCK__2kkunmucLU29j83sZ6QGB2EVZ3ULLmbYhMTo8OAy8-F5kUrJDo230V92LJRJwKpB_jbhkcmh50pLT-EePlLuNN9d5cIVz3cyum2Zs2sJgO8H4ZmLekT8XzyALnomh2ov9t0JnlAf7yPrrlHfJk3VJ8t3ByB1mvqHpqgcN2E-0uk51D4h43s2x8-kKA5VMDMqUgS',
-    description: 'Moldes descartables de aluminio aptos para horno y congelador, ideales para marquesas, quesillos y mini pasteles.'
+    description: 'Topper para torta multicapa en cartulina metalizada y relieve personalizado con nombre y edad.'
   }
 ];
 

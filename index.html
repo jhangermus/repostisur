@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Repostisur - Insumos de Repostería al Mayor y Detal</title>
+  <title>REPOSTISUR C.A - Insumos de Repostería al Mayor y Detal</title>
   
   <meta name="theme-color" content="#ffd700"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   
-  <!-- Tailwind CSS & Google Fonts -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -116,18 +115,30 @@
     .icon-filled {
       font-variation-settings: 'FILL' 1;
     }
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Logo tricolor venezolano */
+    .logo-tricolor {
+      background: linear-gradient(135deg, #cf142b 0%, #cf142b 33%, #003893 33%, #003893 66%, #cf9a00 66%, #cf9a00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .logo-tricolor-alt {
+      display: inline-flex;
+      align-items: center;
+      gap: 0px;
     }
+    .logo-r { color: #CF142B; }
+    .logo-epo { color: #003893; }
+    .logo-stisur { color: #CF9A00; }
+    .logo-ca { color: #CF142B; font-size: 0.75em; }
   </style>
 </head>
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
 
-  <!-- Live BCV Rate Ticker (Informativo para Clientes) -->
+  <!-- Live BCV Rate Ticker -->
   <div class="bg-primary-container text-on-primary-container py-1.5 px-4 text-xs font-semibold flex items-center justify-between border-b border-outline-variant/30">
     <div class="max-w-container-max mx-auto w-full flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -147,25 +158,29 @@
   <header class="bg-surface sticky top-0 w-full z-40 border-b border-outline-variant shadow-sm backdrop-blur-md bg-surface/95">
     <div class="flex justify-between items-center px-4 sm:px-lg py-sm w-full max-w-container-max mx-auto">
       <div class="flex items-center gap-md">
-        <a class="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary flex items-center gap-1.5" href="index.html">
-          <span class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container text-sm font-black shadow-sm">R</span>
-          Repostisur
+        <a class="font-headline-lg text-xl sm:text-2xl font-black flex items-center gap-1.5" href="index.html">
+          <span class="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-black shadow-sm overflow-hidden"
+                style="background: linear-gradient(135deg, #CF142B 33%, #003893 33% 66%, #CF9A00 66%)">
+            <span style="color:white;">R</span>
+          </span>
+          <span class="logo-tricolor-alt">
+            <span class="logo-r">REP</span><span class="logo-epo">OST</span><span class="logo-stisur">ISUR</span>&nbsp;<span class="logo-ca font-black">C.A</span>
+          </span>
         </a>
       </div>
 
       <nav class="hidden md:flex gap-gutter items-center">
-        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('cacao')">Cacao</a>
+        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('insumos')">Insumos</a>
         <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('desechables')">Desechables</a>
-        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('pudines')">Pudines</a>
+        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('utensilios')">Utensilios</a>
+        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('impresiones')">Impresiones</a>
+        <a class="category-nav-link text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#catalogo" onclick="filterCategoryByNav('cake-topper')">Cake Topper</a>
       </nav>
 
       <div class="flex items-center gap-2 sm:gap-md">
-        <!-- Search anchor button -->
         <a href="#catalogo" onclick="document.getElementById('search-products-input')?.focus()" class="text-on-surface hover:bg-surface-container-low transition-all p-2 rounded-full active:scale-90" title="Buscar">
           <span class="material-symbols-outlined text-xl">search</span>
         </a>
-
-        <!-- Shopping Cart Button with Dynamic Badge -->
         <button class="cart-toggle-btn text-on-surface hover:bg-surface-container-low transition-all p-2 rounded-full active:scale-90 relative" title="Ver Carrito">
           <span class="material-symbols-outlined text-2xl text-primary">shopping_cart</span>
           <span class="cart-count-badge hidden absolute top-0.5 right-0.5 bg-tertiary text-on-tertiary font-label-sm text-[10px] w-5 h-5 rounded-full items-center justify-center font-bold shadow-md">0</span>
@@ -175,51 +190,53 @@
   </header>
 
   <main class="flex-grow">
-    <!-- Hero Section -->
-    <section class="relative w-full min-h-[420px] sm:min-h-[480px] flex items-center justify-center bg-surface-container-highest overflow-hidden">
+
+    <!-- Hero Section compacto -->
+    <section class="relative w-full min-h-[320px] sm:min-h-[380px] flex items-center justify-center bg-surface-container-highest overflow-hidden">
       <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbSO_nOp_q2kzMKuSzzx5UYWDvipH_xCN6mW0nELDeWfV-Z3lNz__w3tgpaLmlo3fs-gg_vL59o1DMYgkKXibga5I_neIqel0r_fcVj3Oj3KUd1jTZqq2y9LbR1N3wBQDwreKhR4FUvNhB0r8FawYmD33BzpU06wxJCyCziuvcAepozZ9iPlT9mB9c2Okt1crAy2BelqWRpBh2XCMPbjNkdfoe6-lTVEFerf3Mw84Aw6QY-ZI-yY8m');"></div>
       <div class="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/85 to-surface/90 z-10"></div>
       
-      <div class="relative z-20 text-center px-4 sm:px-md max-w-3xl mx-auto flex flex-col items-center gap-md py-12">
-        <span class="bg-primary-container/80 text-on-primary-container font-label-sm text-xs px-3 py-1 rounded-full uppercase tracking-wider font-bold">Repostisur Venezuela</span>
+      <div class="relative z-20 text-center px-4 sm:px-md max-w-3xl mx-auto flex flex-col items-center gap-4 py-10">
+        <span class="bg-primary-container/80 text-on-primary-container font-label-sm text-xs px-3 py-1 rounded-full uppercase tracking-wider font-bold">🇻🇪 Repostisur Venezuela</span>
         <h1 class="font-display-lg text-3xl sm:text-5xl text-on-surface font-extrabold tracking-tight">El Socio del Maestro Pastelero</h1>
         <p class="font-body-lg text-base sm:text-lg text-on-surface-variant max-w-xl">
-          Insumos de repostería de calidad industrial y artesanal. Precios en Bolívares a tasa oficial BCV y pedidos directos a WhatsApp.
+          Insumos de repostería de calidad industrial y artesanal. Precios en Bolívares a tasa oficial BCV.
         </p>
-        <div class="flex flex-wrap items-center justify-center gap-3 mt-2">
-          <a href="#catalogo" class="bg-primary-container text-on-primary-container font-headline-md font-bold px-8 py-3.5 rounded-xl hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-            Ver Catálogo
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-1">
+          <!-- Botón catálogo (principal) -->
+          <a href="#catalogo" class="bg-primary-container text-on-primary-container font-headline-md font-bold px-7 py-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">category</span>
+            Ver Catálogo Completo
           </a>
-          <button class="cart-toggle-btn bg-surface-container-lowest border border-outline-variant text-on-surface font-headline-md font-bold px-6 py-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 shadow-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-[20px] text-primary">shopping_cart</span>
-            Mi Carrito
+          <!-- Botón Productos Destacados -->
+          <button id="hero-featured-btn" onclick="showFeaturedProducts()" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-headline-md font-bold px-6 py-3 rounded-xl hover:bg-surface-container-low transition-all duration-200 shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-primary">star</span>
+            Productos Destacados
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Featured Products Section -->
-    <section class="py-12 px-4 sm:px-lg max-w-container-max mx-auto">
-      <div class="flex justify-between items-end mb-6">
+    <!-- Productos Destacados (oculto por defecto, se muestra al hacer clic) -->
+    <section id="featured-section" class="hidden py-10 px-4 sm:px-lg max-w-container-max mx-auto border-b border-outline-variant/40">
+      <div class="flex justify-between items-center mb-6">
         <div>
           <span class="text-xs font-bold text-tertiary uppercase tracking-wider">Selección Especial</span>
           <h2 class="font-headline-lg text-2xl sm:text-3xl text-on-surface font-bold">Productos Destacados</h2>
         </div>
-        <a class="font-body-md text-sm text-secondary hover:underline flex items-center gap-1 font-semibold" href="#catalogo">
-          Ver todo el catálogo <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </a>
+        <button onclick="hideFeaturedProducts()" class="text-sm text-on-surface-variant hover:text-on-surface flex items-center gap-1 font-semibold">
+          <span class="material-symbols-outlined text-sm">close</span> Cerrar
+        </button>
       </div>
-
-      <!-- Featured Grid rendered by JS -->
       <div id="featured-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Rendered dynamically by app.js -->
       </div>
     </section>
 
-    <!-- Full Catalog Section with Filter & Search -->
-    <section id="catalogo" class="py-10 px-4 sm:px-lg max-w-container-max mx-auto border-t border-outline-variant/40">
-      <div class="mb-8">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+    <!-- Full Catalog Section — PRIMERO lo que ve el cliente -->
+    <section id="catalogo" class="py-10 px-4 sm:px-lg max-w-container-max mx-auto">
+      <div class="mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
           <div>
             <h2 class="font-headline-lg text-2xl sm:text-3xl text-on-surface font-bold">Catálogo Completo de Insumos</h2>
             <p id="catalog-results-count" class="font-body-md text-sm text-on-surface-variant">Cargando productos...</p>
@@ -228,23 +245,29 @@
           <!-- Live Search Bar -->
           <div class="relative w-full md:w-80">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-            <input id="search-products-input" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl font-body-md text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all shadow-sm" placeholder="Buscar cacao, vasos, pudín..." type="text"/>
+            <input id="search-products-input" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl font-body-md text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all shadow-sm" placeholder="Buscar insumos, utensilios, cake topper..." type="text"/>
           </div>
         </div>
 
-        <!-- Category Pills Filter -->
+        <!-- Category Pills Filter — Nuevas categorías -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
           <button data-category="all" class="category-filter-btn bg-secondary-container text-on-secondary-container font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-transparent whitespace-nowrap shadow-sm">
             Todos los Insumos
           </button>
-          <button data-category="cacao" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
-            🍫 Cacao y Chocolatería
+          <button data-category="insumos" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
+            🧂 Insumos
           </button>
           <button data-category="desechables" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
-            🥤 Vasos y Desechables
+            🥤 Desechables
           </button>
-          <button data-category="pudines" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
-            🍮 Pudines y Mezclas
+          <button data-category="utensilios" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
+            🍴 Utensilios
+          </button>
+          <button data-category="impresiones" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
+            🖨️ Impresiones Comestibles
+          </button>
+          <button data-category="cake-topper" class="category-filter-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap transition-colors">
+            🎂 Cake Topper
           </button>
         </div>
       </div>
@@ -269,12 +292,8 @@
       </button>
     </div>
 
-    <!-- Cart List -->
-    <div class="flex-grow overflow-y-auto p-4 space-y-3" id="cart-items-list">
-      <!-- Items dynamically populated -->
-    </div>
+    <div class="flex-grow overflow-y-auto p-4 space-y-3" id="cart-items-list"></div>
 
-    <!-- Empty State -->
     <div id="cart-empty-state" class="hidden flex-grow flex flex-col items-center justify-center p-8 text-center">
       <span class="material-symbols-outlined text-outline-variant mb-3 text-6xl">remove_shopping_cart</span>
       <h4 class="font-headline-md text-lg font-bold text-on-surface mb-1">Tu carrito está vacío</h4>
@@ -284,7 +303,6 @@
       </button>
     </div>
 
-    <!-- Cart Footer Summary -->
     <div id="cart-summary-section" class="p-4 border-t border-outline-variant bg-surface-container-low space-y-3">
       <div class="space-y-1.5 text-sm text-on-surface-variant">
         <div class="flex justify-between">
@@ -378,11 +396,13 @@
   <footer class="w-full mt-16 border-t border-outline-variant bg-surface-container-highest">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter px-4 sm:px-lg py-12 max-w-container-max mx-auto">
       <div class="flex flex-col gap-sm">
-        <span class="font-headline-md text-2xl font-bold text-primary">Repostisur</span>
+        <span class="font-headline-md text-2xl font-black logo-tricolor-alt">
+          <span class="logo-r">REP</span><span class="logo-epo">OST</span><span class="logo-stisur">ISUR</span>&nbsp;<span class="logo-ca">C.A</span>
+        </span>
         <p class="font-label-sm text-sm text-on-surface-variant max-w-[280px]">
-          Insumos de repostería al mayor y detal. La mayor calidad en cacaos, desechables y premezclas para tu negocio.
+          Insumos de repostería al mayor y detal. La mayor calidad en cacaos, desechables, utensilios, impresiones comestibles y Cake Toppers para tu negocio.
         </p>
-        <span class="font-label-sm text-xs text-on-surface-variant block mt-2">© 2026 Repostisur. Todos los derechos reservados.</span>
+        <span class="font-label-sm text-xs text-on-surface-variant block mt-2">© 2026 REPOSTISUR C.A. Todos los derechos reservados.</span>
       </div>
 
       <div class="flex flex-col gap-sm">
@@ -400,12 +420,12 @@
     </div>
   </footer>
 
-  <!-- FAB for WhatsApp on Mobile -->
+  <!-- FAB WhatsApp Mobile -->
   <a class="md:hidden fixed bottom-5 right-5 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl z-40 hover:scale-110 active:scale-95 transition-all flex items-center justify-center" href="https://wa.me/584121234567" target="_blank" title="WhatsApp">
     <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/></svg>
   </a>
 
-  <!-- Supabase & App Scripts -->
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/storage.js"></script>
@@ -416,6 +436,17 @@
     function filterCategoryByNav(cat) {
       const btn = document.querySelector(`.category-filter-btn[data-category="${cat}"]`);
       if (btn) btn.click();
+      document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showFeaturedProducts() {
+      const section = document.getElementById('featured-section');
+      section.classList.remove('hidden');
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function hideFeaturedProducts() {
+      document.getElementById('featured-section').classList.add('hidden');
     }
   </script>
 </body>

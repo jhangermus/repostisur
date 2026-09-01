@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Panel Administrativo y Consultor - Repostisur</title>
+  <title>Panel Administrativo - REPOSTISUR C.A</title>
   
   <!-- PWA Manifest & Mobile Meta -->
   <link rel="manifest" href="manifest.json"/>
@@ -156,7 +156,7 @@
     <div class="mb-6">
       <div class="flex items-center gap-2 mb-1">
         <span class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container font-black">R</span>
-        <h1 class="font-headline-md text-xl font-bold text-on-surface">Repostisur</h1>
+        <h1 class="font-headline-md text-xl font-bold text-on-surface">REPOSTISUR C.A</h1>
       </div>
       <p class="font-label-sm text-xs text-on-surface-variant">Panel Administrativo & POS</p>
     </div>
@@ -204,7 +204,7 @@
   <div class="md:hidden bg-surface-container-lowest border-b border-outline-variant px-4 py-3 flex justify-between items-center z-20">
     <div class="flex items-center gap-2">
       <span class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-black">R</span>
-      <h1 class="font-headline-md text-base font-bold text-on-surface">Repostisur Panel</h1>
+      <h1 class="font-headline-md text-base font-bold text-on-surface">REPOSTISUR C.A</h1>
     </div>
     <div class="flex items-center gap-2">
       <span id="admin-bcv-badge-mobile" class="text-[11px] bg-primary-container/60 text-on-primary-container font-bold px-2 py-1 rounded-full">BCV</span>
@@ -243,9 +243,11 @@
       <!-- Quick Category Chips -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
         <button data-cat="all" class="checker-cat-chip bg-secondary text-on-secondary text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap shadow-sm">Todos los Insumos</button>
-        <button data-cat="cacao" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🍫 Cacao</button>
+        <button data-cat="insumos" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🧂 Insumos</button>
         <button data-cat="desechables" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🥤 Desechables</button>
-        <button data-cat="pudines" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🍮 Pudines</button>
+        <button data-cat="utensilios" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🍴 Utensilios</button>
+        <button data-cat="impresiones" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🖨️ Impresiones Comestibles</button>
+        <button data-cat="cake-topper" class="checker-cat-chip bg-surface-container text-on-surface-variant text-xs font-bold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high whitespace-nowrap">🎂 Cake Topper</button>
       </div>
 
       <!-- Results Grid (Big Price Cards) -->
@@ -353,9 +355,11 @@
 
         <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 hide-scrollbar">
           <button data-category="all" class="admin-cat-btn bg-secondary-container text-on-secondary-container font-label-sm text-xs font-semibold px-4 py-2 rounded-full whitespace-nowrap">Todos</button>
-          <button data-category="cacao" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Cacao</button>
+          <button data-category="insumos" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Insumos</button>
           <button data-category="desechables" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Desechables</button>
-          <button data-category="pudines" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Pudines</button>
+          <button data-category="utensilios" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Utensilios</button>
+          <button data-category="impresiones" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Impresiones Comestibles</button>
+          <button data-category="cake-topper" class="admin-cat-btn bg-transparent text-on-surface-variant font-label-sm text-xs font-semibold px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-low whitespace-nowrap">Cake Topper</button>
         </div>
       </div>
 
@@ -532,10 +536,11 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Categoría *</label>
             <select id="prod-category" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm bg-surface focus:border-secondary focus:ring-1 focus:ring-secondary">
-              <option value="cacao">Cacao</option>
+              <option value="insumos">Insumos</option>
               <option value="desechables">Desechables</option>
-              <option value="pudines">Pudines</option>
-              <option value="reposteria">Otros Insumos</option>
+              <option value="utensilios">Utensilios</option>
+              <option value="impresiones">Impresiones Comestibles</option>
+              <option value="cake-topper">Cake Topper</option>
             </select>
           </div>
           <div>

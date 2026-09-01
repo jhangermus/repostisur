@@ -522,10 +522,14 @@ async function saveProductFromModal() {
   const description = document.getElementById('prod-description').value.trim();
 
   const categoryNames = {
-    cacao: 'Cacao',
+    insumos: 'Insumos',
     desechables: 'Desechables',
-    pudines: 'Pudines',
-    reposteria: 'Otros Insumos'
+    utensilios: 'Utensilios',
+    impresiones: 'Impresiones Comestibles',
+    'cake-topper': 'Cake Topper',
+    cacao: 'Insumos',
+    pudines: 'Insumos',
+    reposteria: 'Insumos'
   };
 
   const productData = {
