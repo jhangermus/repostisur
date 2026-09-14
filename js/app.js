@@ -1,23 +1,20 @@
-// Repostisur Storefront Application Logic (Instant Render & Zero-Lag Architecture)
+// Repostisur Storefront Application Logic (Supabase-First Rate Architecture)
 
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Renderizado instantáneo (0ms) desde caché local para fluidez inmediata
-  initBCVRate();
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Primero sincronizar la tasa real desde Supabase (fuente de verdad)
+  //    para que los precios en pantalla nunca muestren un valor desactualizado del caché
+  await RepostisurStorage.syncFromCloud();
+  await initBCVRate();
+
+  // 2. Renderizar con la tasa correcta desde el inicio
   renderStorefront();
   updateCartBadge();
 
-  // 2. Configurar listeners de interacción de inmediato
+  // 3. Configurar listeners de interacción
   setupCategoryFilters();
   setupSearchInput();
   setupCartDrawer();
   setupCheckoutModal();
-
-  // 3. Sincronización en segundo plano con Supabase (sin bloquear la interfaz)
-  RepostisurStorage.syncFromCloud().then(() => {
-    initBCVRate();
-    renderStorefront();
-    renderCartContents();
-  });
 });
 
 let currentCategory = 'all';
