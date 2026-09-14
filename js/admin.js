@@ -155,7 +155,7 @@ async function loadBCVSettings() {
   if (bcvModeToggle) bcvModeToggle.checked = settings.bcvMode === 'auto';
   if (manualRateInput) manualRateInput.value = settings.manualRate || rateInfo.rate;
   if (manualRateContainer) manualRateContainer.style.display = settings.bcvMode === 'manual' ? 'block' : 'none';
-  if (storePhoneInput) storePhoneInput.value = settings.whatsappNumber || '584121234567';
+  if (storePhoneInput) storePhoneInput.value = settings.whatsappNumber || '584246687465';
 
   const sbConfig = SupabaseManager.getConfig();
   if (supabaseUrlInput) supabaseUrlInput.value = sbConfig.url;
@@ -644,7 +644,7 @@ function setupSettingsHandlers() {
     savePhoneBtn.addEventListener('click', async () => {
       const phone = storePhoneInput.value.replace(/[^0-9]/g, '');
       if (!phone || phone.length < 10) {
-        alert('Ingresa un número válido con código de país (ej. 584121234567).');
+        alert('Ingresa un número válido con código de país (ej. 584246687465).');
         return;
       }
       const settings = RepostisurStorage.getSettings();

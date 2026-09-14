@@ -10,7 +10,7 @@ const STORAGE_KEYS = {
 
 const DEFAULT_SETTINGS = {
   storeName: 'REPOSTISUR C.A',
-  whatsappNumber: '584121234567',
+  whatsappNumber: '584246687465',
   address: 'Av. Principal, Edificio Repostisur, Local 1',
   adminPin: '1234',
   bcvMode: 'auto',
@@ -168,7 +168,7 @@ const RepostisurStorage = {
       if (!setErr && cloudSettings) {
         const mappedSettings = {
           storeName: cloudSettings.store_name || 'REPOSTISUR C.A',
-          whatsappNumber: cloudSettings.whatsapp_number || '584121234567',
+          whatsappNumber: cloudSettings.whatsapp_number || '584246687465',
           address: cloudSettings.address || '',
           adminPin: cloudSettings.admin_pin || '1234',
           bcvMode: cloudSettings.bcv_mode || 'auto',
@@ -228,7 +228,7 @@ const RepostisurStorage = {
       if (!error && data) {
         const mappedSettings = {
           storeName: data.store_name || 'REPOSTISUR C.A',
-          whatsappNumber: data.whatsapp_number || '584121234567',
+          whatsappNumber: data.whatsapp_number || '584246687465',
           address: data.address || '',
           adminPin: data.admin_pin || '1234',
           bcvMode: data.bcv_mode || 'auto',

@@ -500,7 +500,7 @@ function sendOrderToWhatsApp() {
   message += `━━━━━━━━━━━━━━━━━━━━\n`;
   message += `Adjunto mi comprobante de pago o confirmación para despachar el pedido. ¡Muchas gracias!`;
 
-  const phone = settings.whatsappNumber.replace(/[^0-9]/g, '') || '584121234567';
+  const phone = settings.whatsappNumber.replace(/[^0-9]/g, '') || '584246687465';
   const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
   RepostisurStorage.clearCart();
