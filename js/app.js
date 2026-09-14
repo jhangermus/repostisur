@@ -1,26 +1,20 @@
-// Repostisur Storefront Application Logic (with Cloud Sync & Realtime)
+// Repostisur Storefront Application Logic (Instant Render & Zero-Lag Architecture)
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // Sync latest data from Supabase Cloud (if connected)
-  await RepostisurStorage.syncFromCloud();
-
-  // Initialize BCV Rate
-  await initBCVRate();
-
-  // Initial Render
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Renderizado instantáneo (0ms) desde caché local para fluidez inmediata
+  initBCVRate();
   renderStorefront();
   updateCartBadge();
 
-  // Setup Event Listeners
+  // 2. Configurar listeners de interacción de inmediato
   setupCategoryFilters();
   setupSearchInput();
   setupCartDrawer();
   setupCheckoutModal();
 
-  // Listen to Realtime updates from Supabase Cloud
-  window.addEventListener('repostisur_data_updated', async () => {
-    console.log('🔄 Datos actualizados en la nube. Re-renderizando tienda...');
-    await initBCVRate();
+  // 3. Sincronización en segundo plano con Supabase (sin bloquear la interfaz)
+  RepostisurStorage.syncFromCloud().then(() => {
+    initBCVRate();
     renderStorefront();
     renderCartContents();
   });

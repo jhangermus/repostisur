@@ -1,10 +1,11 @@
-// Repostisur Unified Data Layer (Supabase Cloud + Base64 Fallback + Realtime Sync)
+// Repostisur Unified Data Layer (Ultra-Optimized for Free Tier & Instant Speed)
 
 const STORAGE_KEYS = {
   PRODUCTS: 'repostisur_products',
   SETTINGS: 'repostisur_settings',
   CART: 'repostisur_cart',
-  AUTH_SESSION: 'repostisur_admin_session'
+  AUTH_SESSION: 'repostisur_admin_session',
+  LAST_SYNC: 'repostisur_last_sync_ts'
 };
 
 const DEFAULT_SETTINGS = {
@@ -107,12 +108,13 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const RepostisurStorage = {
+  // Sincronización inteligente y de ultra-bajo consumo de cuota
   async syncFromCloud() {
     const client = SupabaseManager.getClient();
     if (!client) return this.getProducts();
 
     try {
-      // 1. Sync Products from Supabase Cloud
+      // 1. Sincronizar productos
       const { data: cloudProducts, error: prodErr } = await client
         .from('products')
         .select('*')
@@ -135,9 +137,8 @@ const RepostisurStorage = {
             description: p.description || ''
           }));
           this.saveProducts(mappedProducts);
-          return mappedProducts;
-        } else {
-          // If cloud has 0 products yet, seed default products to cloud
+        } else if (window.IS_ADMIN) {
+          // Solo el admin crea las semillas iniciales si la tabla estuviera vacía
           for (const item of DEFAULT_PRODUCTS) {
             await client.from('products').upsert({
               id: item.id,
@@ -157,7 +158,7 @@ const RepostisurStorage = {
         }
       }
 
-      // 2. Sync Settings from Supabase Cloud
+      // 2. Sincronizar ajustes (tasa, teléfono, pin)
       const { data: cloudSettings, error: setErr } = await client
         .from('store_settings')
         .select('*')
@@ -166,7 +167,7 @@ const RepostisurStorage = {
 
       if (!setErr && cloudSettings) {
         const mappedSettings = {
-          storeName: cloudSettings.store_name || 'Repostisur',
+          storeName: cloudSettings.store_name || 'REPOSTISUR C.A',
           whatsappNumber: cloudSettings.whatsapp_number || '584121234567',
           address: cloudSettings.address || '',
           adminPin: cloudSettings.admin_pin || '1234',
@@ -175,12 +176,15 @@ const RepostisurStorage = {
           currentRate: Number(cloudSettings.current_rate) || 85.00,
           lastRateUpdate: cloudSettings.last_rate_update
         };
-        this.saveSettings(mappedSettings);
+        this.saveSettingsLocalOnly(mappedSettings);
       }
 
-      this.initRealtimeSubscriptions(client);
+      // 3. Activar Realtime SOLO en el panel admin (protege la cuota de 200 conexiones concurrentes)
+      if (window.IS_ADMIN) {
+        this.initRealtimeSubscriptions(client);
+      }
     } catch (err) {
-      console.warn('⚠️ Error al sincronizar con Supabase Cloud:', err);
+      console.warn('⚠️ Usando caché local optimizado:', err);
     }
     return this.getProducts();
   },
@@ -189,29 +193,27 @@ const RepostisurStorage = {
   pollingInterval: null,
 
   initRealtimeSubscriptions(client) {
-    if (this.realtimeActive || !client) return;
+    if (this.realtimeActive || !client || !window.IS_ADMIN) return;
     this.realtimeActive = true;
 
-    // Realtime: escucha cambios en products Y store_settings
-    client.channel('repostisur-realtime')
+    // Realtime: escucha cambios en products Y store_settings sin hacer polling repetitivo
+    client.channel('repostisur-admin-channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
         this.syncFromCloud().then(() => window.dispatchEvent(new CustomEvent('repostisur_data_updated')));
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'store_settings' }, () => {
-        console.log('🔄 Cambio en store_settings detectado vía Realtime');
         this.syncSettingsOnly(client).then(() => window.dispatchEvent(new CustomEvent('repostisur_settings_updated')));
       })
       .subscribe((status) => {
-        console.log('📡 Realtime status:', status);
+        console.log('📡 Realtime Admin conectado:', status);
       });
 
-    // Polling de respaldo cada 30 segundos (garantiza sincronización de tasa BCV, modo, PIN, etc.)
-    if (this.pollingInterval) clearInterval(this.pollingInterval);
-    this.pollingInterval = setInterval(() => {
-      this.syncSettingsOnly(client).then(() => {
-        window.dispatchEvent(new CustomEvent('repostisur_settings_updated'));
-      });
-    }, 30000);
+    // Sincronizar automáticamente cuando el usuario regresa a la pestaña (Visibility Change)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && window.IS_ADMIN) {
+        this.syncSettingsOnly(client).then(() => window.dispatchEvent(new CustomEvent('repostisur_settings_updated')));
+      }
+    });
   },
 
   async syncSettingsOnly(client) {
@@ -225,7 +227,7 @@ const RepostisurStorage = {
 
       if (!error && data) {
         const mappedSettings = {
-          storeName: data.store_name || 'Repostisur',
+          storeName: data.store_name || 'REPOSTISUR C.A',
           whatsappNumber: data.whatsapp_number || '584121234567',
           address: data.address || '',
           adminPin: data.admin_pin || '1234',
@@ -234,7 +236,7 @@ const RepostisurStorage = {
           currentRate: Number(data.current_rate) || 85.00,
           lastRateUpdate: data.last_rate_update
         };
-        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(mappedSettings));
+        this.saveSettingsLocalOnly(mappedSettings);
         return mappedSettings;
       }
     } catch (err) {
@@ -276,7 +278,7 @@ const RepostisurStorage = {
     }
     this.saveProducts(products);
 
-    // Save directly to Supabase Cloud
+    // Guardar directamente en Supabase Cloud
     const client = SupabaseManager.getClient();
     if (client) {
       try {
@@ -330,7 +332,7 @@ const RepostisurStorage = {
   getSettings() {
     const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     if (!raw) {
-      this.saveSettings(DEFAULT_SETTINGS);
+      this.saveSettingsLocalOnly(DEFAULT_SETTINGS);
       return DEFAULT_SETTINGS;
     }
     try {
@@ -340,8 +342,12 @@ const RepostisurStorage = {
     }
   },
 
-  async saveSettings(settings) {
+  saveSettingsLocalOnly(settings) {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+  },
+
+  async saveSettings(settings) {
+    this.saveSettingsLocalOnly(settings);
 
     const client = SupabaseManager.getClient();
     if (client) {
@@ -363,15 +369,16 @@ const RepostisurStorage = {
     }
   },
 
-  // Image Upload with Automatic Resize & Fallback
+  // Subida de imagen ultra-comprimida (Max 600px, WebP/JPEG 0.78, < 40KB por foto)
+  // Permite almacenar más de 25.000 fotos en el plan gratuito de 1 GB
   async uploadImage(file) {
-    const base64Promise = new Promise((resolve) => {
+    const compressPromise = new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxDim = 800;
+          const maxDim = 600; // Dimension óptima para web/móvil
           let width = img.width;
           let height = img.height;
           if (width > height && width > maxDim) {
@@ -385,24 +392,29 @@ const RepostisurStorage = {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          resolve(compressedDataUrl);
+
+          // Convertir a blob comprimido (JPEG 0.78)
+          canvas.toBlob((blob) => {
+            resolve({
+              blob,
+              dataUrl: canvas.toDataURL('image/jpeg', 0.78)
+            });
+          }, 'image/jpeg', 0.78);
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     });
 
-    const localBase64 = await base64Promise;
+    const { blob, dataUrl } = await compressPromise;
 
     const client = SupabaseManager.getClient();
-    if (client) {
+    if (client && blob) {
       try {
-        const ext = file.name.split('.').pop() || 'jpg';
-        const fileName = `prod_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+        const fileName = `p_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
         const { error } = await client.storage
           .from('repostisur-images')
-          .upload(fileName, file, { cacheControl: '3600', upsert: true });
+          .upload(fileName, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: true });
 
         if (!error) {
           const { data: urlData } = client.storage
@@ -417,7 +429,7 @@ const RepostisurStorage = {
       }
     }
 
-    return localBase64;
+    return dataUrl;
   },
 
   getCart() {

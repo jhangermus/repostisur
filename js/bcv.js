@@ -1,5 +1,5 @@
-// BCV Exchange Rate Service for Repostisur
-// La tasa activa siempre se lee desde Supabase > localStorage > API externa
+// BCV Exchange Rate Service for Repostisur (Ultra-Optimized)
+// Lectura ultra-rápida y 0 escrituras innecesarias en Supabase
 
 const BCVService = {
   API_URLS: [
@@ -7,7 +7,7 @@ const BCVService = {
     'https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv'
   ],
 
-  // Fuente de verdad única: lee siempre desde settings (que viene de Supabase)
+  // Fuente de verdad única: lee siempre desde settings (sincronizado desde Supabase/localStorage)
   getCurrentRate() {
     const settings = RepostisurStorage.getSettings();
     if (settings.bcvMode === 'manual') {
@@ -16,10 +16,11 @@ const BCVService = {
     return Number(settings.currentRate) || 85.00;
   },
 
-  async fetchOfficialRate() {
+  // Consulta optimizada: en la tienda de clientes solo lee; solo admin actualiza la nube
+  async fetchOfficialRate(forceUpdate = false) {
     const settings = RepostisurStorage.getSettings();
 
-    // Si el modo es manual, devolver tasa manual guardada en Supabase/local
+    // 1. Si el modo es manual, retornar directamente la tasa configurada
     if (settings.bcvMode === 'manual') {
       return {
         rate: Number(settings.manualRate) || 85.00,
@@ -28,16 +29,33 @@ const BCVService = {
       };
     }
 
-    // Modo auto: consultar API externa y guardar en Supabase para sincronizar
+    // 2. Comprobar si tenemos una tasa reciente (menos de 60 minutos) para no sobrecargar llamadas
+    const lastUpdate = settings.lastRateUpdate ? new Date(settings.lastRateUpdate).getTime() : 0;
+    const now = Date.now();
+    const isFresh = (now - lastUpdate) < (60 * 60 * 1000); // 1 hora de frescura
+
+    if (!forceUpdate && isFresh && settings.currentRate > 0) {
+      return {
+        rate: Number(settings.currentRate),
+        source: 'Oficial BCV (Sincronizada)',
+        date: new Date(settings.lastRateUpdate).toLocaleDateString()
+      };
+    }
+
+    // 3. Solo si se fuerza o expiró la frescura, consultar la API externa
     try {
       const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { cache: 'no-store' });
       if (response.ok) {
         const data = await response.json();
         const rate = parseFloat(data.promedio || data.precio || data.valor);
         if (!isNaN(rate) && rate > 0) {
-          // Guardar en settings y sincronizar a Supabase para todos los dispositivos
           const updatedSettings = { ...settings, currentRate: rate, lastRateUpdate: new Date().toISOString() };
-          await RepostisurStorage.saveSettings(updatedSettings);
+          // Guardar localmente siempre; y en Supabase solo si es el admin quien lo ejecuta
+          if (window.IS_ADMIN) {
+            await RepostisurStorage.saveSettings(updatedSettings);
+          } else {
+            RepostisurStorage.saveSettingsLocalOnly(updatedSettings);
+          }
           return {
             rate,
             source: 'Oficial BCV (En vivo)',
@@ -57,7 +75,11 @@ const BCVService = {
         const rate = parseFloat(data.monitors?.usd?.price || data.price);
         if (!isNaN(rate) && rate > 0) {
           const updatedSettings = { ...settings, currentRate: rate, lastRateUpdate: new Date().toISOString() };
-          await RepostisurStorage.saveSettings(updatedSettings);
+          if (window.IS_ADMIN) {
+            await RepostisurStorage.saveSettings(updatedSettings);
+          } else {
+            RepostisurStorage.saveSettingsLocalOnly(updatedSettings);
+          }
           return {
             rate,
             source: 'Oficial BCV (Respaldo)',
@@ -69,10 +91,10 @@ const BCVService = {
       console.warn('Fallo API de respaldo:', err);
     }
 
-    // Último recurso: tasa guardada localmente (puede venir de Supabase)
+    // Último recurso: tasa guardada en configuración
     return {
       rate: Number(settings.currentRate) || Number(settings.manualRate) || 85.00,
-      source: 'Última Tasa Sincronizada',
+      source: 'Última Tasa Registrada',
       date: settings.lastRateUpdate ? new Date(settings.lastRateUpdate).toLocaleDateString() : 'Hoy'
     };
   },
