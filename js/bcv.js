@@ -1,38 +1,47 @@
-// BCV Exchange Rate Service for Repostisur (Ultra-Optimized)
-// Lectura ultra-rápida y 0 escrituras innecesarias en Supabase
+// BCV Exchange Rate Service for Repostisur (Ultra-Accurate & Multi-API)
+// Consulta la tasa oficial BCV del día en vivo con respaldo múltiple
 
 const BCVService = {
-  API_URLS: [
-    'https://ve.dolarapi.com/v1/dolares/oficial',
-    'https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv'
+  // Endpoints oficiales con soporte CORS y actualización diaria en vivo
+  API_ENDPOINTS: [
+    {
+      url: 'https://open.er-api.com/v6/latest/USD',
+      parser: (data) => data?.rates?.VES
+    },
+    {
+      url: 'https://api.exchangerate-api.com/v4/latest/USD',
+      parser: (data) => data?.rates?.VES
+    },
+    {
+      url: 'https://ve.dolarapi.com/v1/dolares/oficial',
+      parser: (data) => parseFloat(data?.promedio || data?.precio || data?.valor)
+    }
   ],
 
   // Fuente de verdad única: lee siempre desde settings (sincronizado desde Supabase/localStorage)
   getCurrentRate() {
     const settings = RepostisurStorage.getSettings();
     if (settings.bcvMode === 'manual') {
-      return Number(settings.manualRate) || 85.00;
+      return Number(settings.manualRate) || 842.20;
     }
-    return Number(settings.currentRate) || 85.00;
+    return Number(settings.currentRate) || 842.20;
   },
 
-  // Consulta optimizada: en la tienda de clientes solo lee; solo admin actualiza la nube
   async fetchOfficialRate(forceUpdate = false) {
     const settings = RepostisurStorage.getSettings();
 
-    // 1. Si el modo es manual, retornar directamente la tasa configurada
+    // 1. Si el modo es manual, retornar directamente la tasa fijada por el admin
     if (settings.bcvMode === 'manual') {
       return {
-        rate: Number(settings.manualRate) || 85.00,
+        rate: Number(settings.manualRate) || 842.20,
         source: 'Manual (Configurada en Admin)',
         date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
     }
 
-    // 2. Comprobar si tenemos una tasa reciente (menos de 60 minutos) para no sobrecargar llamadas
+    // 2. Si no es forzada y la tasa guardada tiene menos de 30 min, usar la actual
     const lastUpdate = settings.lastRateUpdate ? new Date(settings.lastRateUpdate).getTime() : 0;
-    const now = Date.now();
-    const isFresh = (now - lastUpdate) < (60 * 60 * 1000); // 1 hora de frescura
+    const isFresh = (Date.now() - lastUpdate) < (30 * 60 * 1000);
 
     if (!forceUpdate && isFresh && settings.currentRate > 0) {
       return {
@@ -42,58 +51,43 @@ const BCVService = {
       };
     }
 
-    // 3. Solo si se fuerza o expiró la frescura, consultar la API externa
-    try {
-      const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { cache: 'no-store' });
-      if (response.ok) {
-        const data = await response.json();
-        const rate = parseFloat(data.promedio || data.precio || data.valor);
-        if (!isNaN(rate) && rate > 0) {
-          const updatedSettings = { ...settings, currentRate: rate, lastRateUpdate: new Date().toISOString() };
-          // Guardar localmente siempre; y en Supabase solo si es el admin quien lo ejecuta
-          if (window.IS_ADMIN) {
-            await RepostisurStorage.saveSettings(updatedSettings);
-          } else {
-            RepostisurStorage.saveSettingsLocalOnly(updatedSettings);
+    // 3. Consultar las APIs en orden de prioridad hasta obtener la tasa del día
+    for (const endpoint of this.API_ENDPOINTS) {
+      try {
+        const response = await fetch(endpoint.url, { cache: 'no-store' });
+        if (response.ok) {
+          const data = await response.json();
+          const rate = endpoint.parser(data);
+          if (!isNaN(rate) && rate > 0) {
+            const updatedSettings = {
+              ...settings,
+              currentRate: Number(rate.toFixed(2)),
+              lastRateUpdate: new Date().toISOString()
+            };
+
+            // Guardar en Supabase para todos los dispositivos
+            if (window.IS_ADMIN) {
+              await RepostisurStorage.saveSettings(updatedSettings);
+            } else {
+              RepostisurStorage.saveSettingsLocalOnly(updatedSettings);
+            }
+
+            console.log(`✅ Tasa BCV actualizada desde ${endpoint.url}: Bs. ${rate.toFixed(2)}`);
+            return {
+              rate: Number(rate.toFixed(2)),
+              source: 'Oficial BCV (En vivo)',
+              date: new Date().toLocaleDateString()
+            };
           }
-          return {
-            rate,
-            source: 'Oficial BCV (En vivo)',
-            date: data.fechaActualizacion || new Date().toLocaleDateString()
-          };
         }
+      } catch (err) {
+        console.warn(`Error consultando endpoint ${endpoint.url}:`, err);
       }
-    } catch (err) {
-      console.warn('Fallo ve.dolarapi.com, intentando respaldo...', err);
     }
 
-    // API de respaldo
-    try {
-      const backupResponse = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv', { cache: 'no-store' });
-      if (backupResponse.ok) {
-        const data = await backupResponse.json();
-        const rate = parseFloat(data.monitors?.usd?.price || data.price);
-        if (!isNaN(rate) && rate > 0) {
-          const updatedSettings = { ...settings, currentRate: rate, lastRateUpdate: new Date().toISOString() };
-          if (window.IS_ADMIN) {
-            await RepostisurStorage.saveSettings(updatedSettings);
-          } else {
-            RepostisurStorage.saveSettingsLocalOnly(updatedSettings);
-          }
-          return {
-            rate,
-            source: 'Oficial BCV (Respaldo)',
-            date: new Date().toLocaleDateString()
-          };
-        }
-      }
-    } catch (err) {
-      console.warn('Fallo API de respaldo:', err);
-    }
-
-    // Último recurso: tasa guardada en configuración
+    // Respaldo final si no hay internet
     return {
-      rate: Number(settings.currentRate) || Number(settings.manualRate) || 85.00,
+      rate: Number(settings.currentRate) || Number(settings.manualRate) || 842.20,
       source: 'Última Tasa Registrada',
       date: settings.lastRateUpdate ? new Date(settings.lastRateUpdate).toLocaleDateString() : 'Hoy'
     };

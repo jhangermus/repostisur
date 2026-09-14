@@ -1,4 +1,4 @@
-const CACHE_NAME = 'repostisur-v6';
+const CACHE_NAME = 'repostisur-v7';
 const ASSETS_TO_CACHE = [
   './',
   './admin.html',

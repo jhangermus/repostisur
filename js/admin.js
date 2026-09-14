@@ -628,7 +628,7 @@ function setupSettingsHandlers() {
       settings.bcvMode = 'auto';
       await RepostisurStorage.saveSettings(settings);
       
-      const info = await BCVService.fetchOfficialRate();
+      const info = await BCVService.fetchOfficialRate(true);
       await loadBCVSettings();
       renderPriceChecker();
       renderAdminDashboard();
